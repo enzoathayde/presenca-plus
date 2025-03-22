@@ -31,8 +31,7 @@ const createNewUserController = async (request: Request, response: Response): Pr
 
 const editUserController = async (request: Request, response: Response): Promise<any> => {
   try {
-    console.log("ola?");
-    
+        
     const userId = request.params.id;
     const editedUserData: UserDTO = request.body;
 
