@@ -3,7 +3,7 @@ import {  getAllUsersService, createNewUserService, editUserService, deleteUserS
 
 import { Request, Response } from "express";
 
-const getAllUsersController = async (request: Request, response: Response): Promise<any> => {
+const getAllUsersController = async (_: Request, response: Response): Promise<any> => {
   try {
     const allUsers = await getAllUsersService();
     return response.status(200).json(allUsers);
@@ -31,7 +31,7 @@ const createNewUserController = async (request: Request, response: Response): Pr
 
 const editUserController = async (request: Request, response: Response): Promise<any> => {
   try {
-        
+
     const userId = request.params.id;
     const editedUserData: UserDTO = request.body;
 
@@ -54,6 +54,10 @@ const deleteUserController = async (request: Request, response: Response): Promi
     const userId = request.params.id;
 
     const deletedUser = await deleteUserService(userId);
+
+    if(!deletedUser) {
+      return response.status(404).json({"error": "User not found"})
+    }
 
     return response.status(201).json(deletedUser);
   } catch (error) {

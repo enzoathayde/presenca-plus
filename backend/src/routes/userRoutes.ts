@@ -3,12 +3,12 @@ import { getAllUsersController, createNewUserController, editUserController, del
 
 
 
-const router = express.Router()
+const userRouter = express.Router()
 
-router.get("/users/getAll", getAllUsersController)
-router.post("/users/createNew", createNewUserController)
-router.put("/users/:id", editUserController)
-router.delete("/users/:id", deleteUserController)
+userRouter.get("/users/getAll", getAllUsersController)
+userRouter.post("/users/createNew", createNewUserController)
+userRouter.put("/users/:id", editUserController)
+userRouter.delete("/users/:id", deleteUserController)
 
 
-export default router;
+export default userRouter;
