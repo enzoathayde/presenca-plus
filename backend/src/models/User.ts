@@ -1,4 +1,5 @@
 import mongoose, { Schema } from "mongoose";
+import { UserDTO } from "../dtos/UserDTO";
 
 const userScehma: Schema = new mongoose.Schema({
     name: {
@@ -47,4 +48,4 @@ const userScehma: Schema = new mongoose.Schema({
 })
 
 
-export default mongoose.model('User', userScehma);
+export default mongoose.model<UserDTO>('User', userScehma, "users");
