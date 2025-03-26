@@ -29,3 +29,12 @@ export const createUser = async (userData: CreateUserDTO): Promise<void> => {
     }
   }
 };
+
+export const getAllUsers = async () => {
+  try {
+    const response = await api.get(`api/users/getAll`);
+    return response;
+  } catch (error) {
+    throw new Error('Falha ao carregar usuários');
+  }
+};
