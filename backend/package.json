@@ -1,9 +1,17 @@
 {
   "dependencies": {
+    "@react-navigation/native": "^7.0.18",
+    "@react-navigation/stack": "^7.2.2",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
+    "expo": "^52.0.40",
     "express": "^4.21.2",
     "mongoose": "^8.12.1",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "react-native-gesture-handler": "~2.20.2",
+    "react-native-reanimated": "~3.16.1",
+    "react-native-safe-area-context": "4.12.0",
+    "react-native-screens": "~4.4.0"
   },
   "scripts": {
     "start": "node dist/index.js",
@@ -12,6 +20,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.1",
     "@types/node": "^22.13.10",
