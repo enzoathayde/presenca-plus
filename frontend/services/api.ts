@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { API_URL } from '@env';
 
 const api = axios.create({
-  baseURL: process.env.API_URL || 'http://localhost:2047',  // Substitua localhost por seu IP local
+  baseURL: API_URL, 
   timeout: 5000,
 });
 
