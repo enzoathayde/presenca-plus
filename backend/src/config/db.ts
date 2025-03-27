@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const dbURI: string | undefined = process.env.DATABASE;
+const dbURI: string | undefined = process.env.DATABASE ;
 let dbURIValidadated: string = "";
 
 if(!dbURI) {
