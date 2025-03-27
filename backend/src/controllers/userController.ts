@@ -6,6 +6,7 @@ import { Request, Response } from "express";
 const getAllUsersController = async (_: Request, response: Response): Promise<any> => {
   try {
     const allUsers = await getAllUsersService();
+    console.log('allUsers :>> ', allUsers);
     return response.status(200).json(allUsers);
   } catch (error) {
     return response.status(500).json({error: "Internal Server Error"});

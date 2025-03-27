@@ -13,7 +13,7 @@ if(!dbURI) {
 }
 
 export const connectDB = () => { 
-   mongoose.connect(dbURIValidadated)
+   mongoose.connect(dbURIValidadated, { dbName: "presenca_plus" })
   .then(() => console.log("Database connected."))
   .catch(() => console.log("Failed to connnect in database."))
 }

@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { DataTable } from 'react-native-paper';
 import { getAllUsers } from '../services/userService';
 import { Link } from 'expo-router';
-import { useFocusEffect } from 'expo-router'; // Importando useFocusEffect
+import { useFocusEffect } from 'expo-router';
 
 export default function UsersListScreen() {
   const [users, setUsers] = useState<any[]>([]);
 
-  // Função para pegar os usuários
+  
   const fetchUsers = async () => {
     try {
       const response = await getAllUsers();
-      setUsers(response.data); // Atualiza a lista de usuários
+
+      setUsers(response.data); 
     } catch (error) {
+      console.error("Erro ao buscar usuários:", error);
       Alert.alert('Erro', 'Falha ao carregar usuários');
     }
   };
@@ -21,13 +23,15 @@ export default function UsersListScreen() {
   // Recarregar os usuários sempre que a tela for exibida
   useFocusEffect(
     React.useCallback(() => {
-      fetchUsers(); // Atualiza os usuários sempre que a tela for exibida
-    }, []) // Dependência vazia para garantir que a atualização ocorra apenas quando a tela for acessada
+      fetchUsers(); 
+    }, [])
   );
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Usuários Cadastrados</Text>
+
+
       <DataTable>
         <DataTable.Header>
           <DataTable.Title>Nome</DataTable.Title>
@@ -36,28 +40,31 @@ export default function UsersListScreen() {
           <DataTable.Title>Cargo</DataTable.Title>
         </DataTable.Header>
 
-        <FlatList
-          data={users}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <DataTable.Row>
-              <DataTable.Cell>{item.name}</DataTable.Cell>
-              <DataTable.Cell>{item.email}</DataTable.Cell>
-              <DataTable.Cell>{item.course}</DataTable.Cell>
-              <DataTable.Cell>{item.role}</DataTable.Cell>
+        {users.length > 0 ? (
+          users.map((user) => (
+            <DataTable.Row key={user._id}>
+              <DataTable.Cell>{user.name}</DataTable.Cell>
+              <DataTable.Cell>{user.email}</DataTable.Cell>
+              <DataTable.Cell>{user.course}</DataTable.Cell>
+              <DataTable.Cell>{user.role}</DataTable.Cell>
             </DataTable.Row>
-          )}
-        />
+          ))
+        ) : (
+          <DataTable.Row>
+            <DataTable.Cell  style={{ justifyContent: 'center' }}>
+              <Text>Nenhum usuário cadastrado</Text>
+            </DataTable.Cell>
+          </DataTable.Row>
+        )}
       </DataTable>
 
-      <Link href="/createUser">
-        <View style={styles.button}>
-          <Text style={styles.buttonText}>Cadastrar Usuário</Text>
-        </View>
+
+      <Link href="/createUser" style={styles.button}>
+        <Text style={styles.buttonText}>Cadastrar Usuário</Text>
       </Link>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -68,6 +75,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 20,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   button: {
     marginTop: 20,

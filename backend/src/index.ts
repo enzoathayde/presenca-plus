@@ -10,7 +10,7 @@ dotenv.config();
 const app: Express = express();  
 const port: string | undefined = process.env.PORT;
 
-// Configuração do CORS
+
 const corsOptions = {
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -23,13 +23,13 @@ app.use((req, res, next) => {
 });
 app.use(cors(corsOptions));
 
-// Configuração de Rotas
+
 app.use(express.json());
 app.use("/api", userRouter)
 app.use("/api", eventRouter)
 
 connectDB()
 
-app.listen(port, () => {
+app.listen(2047, "192.168.1.103", () => {
   console.log(`Server is running on port ${port}`);
 });
