@@ -8,7 +8,7 @@ import cors from "cors";
 dotenv.config();
 
 const app: Express = express();  
-const port: string | undefined = process.env.PORT;
+const port: number = 2047;
 
 
 const corsOptions = {
@@ -30,6 +30,6 @@ app.use("/api", eventRouter)
 
 connectDB()
 
-app.listen(2047, "192.168.1.103", () => {
+app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
