@@ -1,5 +1,6 @@
 import mongoose, { Mongoose } from "mongoose";
 import dotenv from "dotenv";
+import { log } from "console";
 
 dotenv.config();
 
