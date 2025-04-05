@@ -29,7 +29,7 @@ const userScehma: Schema = new mongoose.Schema({
     },
     registration: {
       type: String,
-      required: [true, "Matrícula é obrigatória"],
+      required: [false, "Matrícula é facultativa"],
       unique: true, 
     },
     role: {

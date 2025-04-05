@@ -1,13 +1,16 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet, TextInput, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Button, StyleSheet, TextInput, Image, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useState } from 'react';
-import { signIn, signUp } from './services/auth.service';
+import { signIn, signUp } from '../services/auth.service';
+// import RegisterScreen from '../RegisterScreen';
+
 
 
 type RootStackParamList = {
   Login: undefined;
   Main: undefined;
+  Register: undefined;
 };
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
@@ -21,8 +24,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState<string | null>(null);
-
+  const [message, setMessage] = useState<string | null>(null)
 
   const handleLogin = async () => {
     setLoading(true)
@@ -31,23 +33,27 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       const response = await signIn(email, password);
       console.log(response);
       setLoading(false)
+      if(response) {
+        setMessage(null)
+      }
       return response
     } catch (error: any) {
       console.log(error);
-      setLoading(false)
-      setMessage('E-mail ou senha inválidos.');
 
+      setLoading(false);
+      setMessage("Usuário/senha incorretos.")
     }
   };
 
   const handleSignUp = async () => {
-    try {
-      const response = await signUp(email, password);
-      console.info(response)
-    } catch (error: any) {
-      console.log(error);
+    navigation.replace('Register')
+    // try {
+    //   const response = await signUp(email, password);
+    //   console.info(response)
+    // } catch (error: any) {
+    //   console.log(error);
 
-    }
+    // }
   };
 
 
@@ -55,7 +61,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     <View style={styles.container}>
 
       <Image
-        source={require('../assets/logo.png')}
+        source={require('../../assets/logo.png')}
         style={styles.logo}
       />
 
@@ -82,15 +88,15 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         ) : (
           <>
             <TouchableOpacity style={styles.btn} onPress={handleLogin} disabled={loading}>
-              <Text style={styles.btn_text}>Entrar</Text>
+              <Text style={styles.btn_text}>Login</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.btn} onPress={handleSignUp} disabled={loading}>
-              <Text style={styles.btn_text}>Cadastrar</Text>
+              <Text style={styles.btn_text}>Cadastre-se</Text>
             </TouchableOpacity>
           </>
         )}
-
       </View>
+      <Text style={styles.errorMessage}>{message}</Text>
     </View>
   );
 };
@@ -152,6 +158,11 @@ const styles = StyleSheet.create({
   },
   smallPadding: {  
     paddingTop: 10
+  },
+  errorMessage: {
+    paddingTop: 30,
+    fontSize: 14,
+    color: '#FC0505'
   }
 });
 

@@ -2,9 +2,10 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import LoginScreen from './src/LoginScreen';
-import FriendsScreen from './src/FriendsScreen';
-import HomeScreen from './src/HomeScreen';
+import LoginScreen from './src/components/LoginScreen';
+import FriendsScreen from './src/components/FriendsScreen';
+import HomeScreen from './src/components/HomeScreen';
+import RegisterScreen from './src/RegisterScreen';
 
 
 const Tab = createBottomTabNavigator();
@@ -24,6 +25,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Register" component={RegisterScreen}/> 
         {/* Tela de Login será a primeira */}
         <Stack.Screen name="Login" component={LoginScreen} />
         {/* Após o login, exibe o menu de abas */}
