@@ -1,4 +1,4 @@
-{
+module.exports = {
   "expo": {
     "name": "mobile",
     "slug": "mobile",
@@ -16,6 +16,8 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.presencaplus.android",
+      "googleServicesFile": "google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -23,6 +25,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a9a41010-05c1-4f6b-9fa2-784b42a028b8"
+      }
     }
   }
 }

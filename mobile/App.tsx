@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -6,7 +6,9 @@ import LoginScreen from './src/components/LoginScreen';
 import FriendsScreen from './src/components/FriendsScreen';
 import HomeScreen from './src/components/HomeScreen';
 import RegisterScreen from './src/RegisterScreen';
-
+import { getFCMToken } from './src/services/notifications.service';
+import messaging from '@react-native-firebase/messaging';
+import { Alert } from 'react-native';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -22,6 +24,36 @@ function TabNavigator() {
 }
 
 export default function App() {
+
+  useEffect(() => {
+    const getToken = async () => {
+      const fcmToken = await getFCMToken();
+      if (fcmToken) {
+        console.log('📲 FCM Token:', fcmToken);
+        Alert.alert('FCM Token', fcmToken);
+      } else {
+        console.log('❌ FCM Token não encontrado');
+      }
+    };
+  
+    getToken();
+  
+    // ✅ Ouve mensagens em primeiro plano
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      console.log('🔔 Notificação recebida em primeiro plano:', remoteMessage);
+  
+      Alert.alert(
+        remoteMessage.notification?.title ?? 'Nova Notificação',
+        remoteMessage.notification?.body ?? ''
+      );
+    });
+  
+    // Cleanup
+    return unsubscribe;
+  }, []);
+  
+
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>

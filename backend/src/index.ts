@@ -4,6 +4,7 @@ import { connectDB } from "./config/db";
 import userRouter from "./routes/userRoutes";
 import eventRouter from "./routes/eventRoutes";
 import cors from "cors";
+import notificationRouter from "./routes/notificationRoute";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use("/api", userRouter)
 app.use("/api", eventRouter)
+app.use('/notifications', notificationRouter); 
 
 connectDB()
 
