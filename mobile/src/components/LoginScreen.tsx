@@ -11,6 +11,7 @@ type RootStackParamList = {
   Login: undefined;
   Main: undefined;
   Register: undefined;
+  Logged: undefined;
 };
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
@@ -33,9 +34,13 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       const response = await signIn(email, password);
       console.log(response);
       setLoading(false)
+
       if(response) {
         setMessage(null)
+        navigation.replace('Logged');
       }
+
+
       return response
     } catch (error: any) {
       console.log(error);

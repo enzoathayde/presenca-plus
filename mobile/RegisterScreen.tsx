@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { signUp, userRegistration } from './services/auth.service';
+import { userRegistration } from './src/services/auth.service';
+
+
 
 type RootStackParamList = {
   Register: undefined;

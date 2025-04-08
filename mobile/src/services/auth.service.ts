@@ -36,3 +36,6 @@ export const getToken = async () => {
   const user = auth.currentUser;
   return user ? await user.getIdToken() : null;
 };
+
+
+export default {userRegistration}

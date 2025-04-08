@@ -5,11 +5,13 @@ import { NavigationContainer } from '@react-navigation/native';
 import LoginScreen from './src/components/LoginScreen';
 import FriendsScreen from './src/components/FriendsScreen';
 import HomeScreen from './src/components/HomeScreen';
-import RegisterScreen from './src/RegisterScreen';
 import { getFCMToken } from './src/services/notifications.service';
 import messaging from '@react-native-firebase/messaging';
 import { Alert, Platform} from 'react-native';
 import * as Notifications from 'expo-notifications';
+import RegisterScreen from './RegisterScreen';
+import LoggedScreen from './src/components/LoggedScreen';
+
 
 
 const Tab = createBottomTabNavigator();
@@ -68,10 +70,9 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Register" component={RegisterScreen}/> 
-        {/* Tela de Login será a primeira */}
         <Stack.Screen name="Login" component={LoginScreen} />
-        {/* Após o login, exibe o menu de abas */}
+        <Stack.Screen name="Logged" component={LoggedScreen} />
+        <Stack.Screen name="Register" component={RegisterScreen}/> 
         <Stack.Screen name="Main" component={TabNavigator} />
       </Stack.Navigator>
     </NavigationContainer>
