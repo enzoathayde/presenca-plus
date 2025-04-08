@@ -8,7 +8,9 @@ import HomeScreen from './src/components/HomeScreen';
 import RegisterScreen from './src/RegisterScreen';
 import { getFCMToken } from './src/services/notifications.service';
 import messaging from '@react-native-firebase/messaging';
-import { Alert } from 'react-native';
+import { Alert, Platform} from 'react-native';
+import * as Notifications from 'expo-notifications';
+
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -47,6 +49,15 @@ export default function App() {
         remoteMessage.notification?.body ?? ''
       );
     });
+
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
   
     // Cleanup
     return unsubscribe;
