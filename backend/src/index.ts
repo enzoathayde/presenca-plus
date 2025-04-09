@@ -5,6 +5,8 @@ import userRouter from "./routes/userRoutes";
 import eventRouter from "./routes/eventRoutes";
 import cors from "cors";
 import notificationRouter from "./routes/notificationRoute";
+import { swaggerSpec } from "./config/swagger";
+import swaggerUi from "swagger-ui-express";
 
 dotenv.config();
 
@@ -29,6 +31,7 @@ app.use(express.json());
 app.use("/api", userRouter)
 app.use("/api", eventRouter)
 app.use('/notifications', notificationRouter); 
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 connectDB()
 
