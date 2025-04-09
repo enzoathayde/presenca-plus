@@ -29,41 +29,41 @@ function TabNavigator() {
 
 export default function App() {
 
-  useEffect(() => {
-    const getToken = async () => {
-      const fcmToken = await getFCMToken();
-      if (fcmToken) {
-        console.log('📲 FCM Token:', fcmToken);
-        Alert.alert('FCM Token', fcmToken);
-      } else {
-        console.log('❌ FCM Token não encontrado');
-      }
-    };
+  // useEffect(() => {
+  //   const getToken = async () => {
+  //     const fcmToken = await getFCMToken();
+  //     if (fcmToken) {
+  //       console.log('📲 FCM Token:', fcmToken);
+  //       Alert.alert('FCM Token', fcmToken);
+  //     } else {
+  //       console.log('❌ FCM Token não encontrado');
+  //     }
+  //   };
   
-    getToken();
+  //   getToken();
   
-    // ✅ Ouve mensagens em primeiro plano
-    const unsubscribe = messaging().onMessage(async remoteMessage => {
-      console.log('🔔 Notificação recebida em primeiro plano:', remoteMessage);
+  //   // ✅ Ouve mensagens em primeiro plano
+  //   const unsubscribe = messaging().onMessage(async remoteMessage => {
+  //     console.log('🔔 Notificação recebida em primeiro plano:', remoteMessage);
   
-      Alert.alert(
-        remoteMessage.notification?.title ?? 'Nova Notificação',
-        remoteMessage.notification?.body ?? ''
-      );
-    });
+  //     Alert.alert(
+  //       remoteMessage.notification?.title ?? 'Nova Notificação',
+  //       remoteMessage.notification?.body ?? ''
+  //     );
+  //   });
 
-    if (Platform.OS === 'android') {
-      Notifications.setNotificationChannelAsync('default', {
-        name: 'default',
-        importance: Notifications.AndroidImportance.MAX,
-        vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#FF231F7C',
-      });
-    }
+  //   if (Platform.OS === 'android') {
+  //     Notifications.setNotificationChannelAsync('default', {
+  //       name: 'default',
+  //       importance: Notifications.AndroidImportance.MAX,
+  //       vibrationPattern: [0, 250, 250, 250],
+  //       lightColor: '#FF231F7C',
+  //     });
+  //   }
   
-    // Cleanup
-    return unsubscribe;
-  }, []);
+  //   // Cleanup
+  //   return unsubscribe;
+  // }, []);
   
 
 
