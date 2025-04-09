@@ -37,14 +37,20 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 
     try {
       const response = await userRegistration({ name, email, password, course, registration, role: 'aluno' });
-      console.log(response);
 
-      setMessage('Cadastro realizado com sucesso!');
-      setLoading(false);
+      if(response.status === 200) {
+        setMessage('Cadastro realizado com sucesso!');
+        setLoading(false);
+        setTimeout(() => {
+          navigation.replace('Login');
+        }, 2000);
+        
+      } else {
+        setMessage('Falha ao registrar usuário. Entre em contato com os administradores do sistema.');
+        setLoading(false);
+      }
 
-      setTimeout(() => {
-        navigation.replace('Login');
-      }, 2000);
+  
     } catch (error: any) {
       console.error('Erro ao cadastrar:', error.message);
       setMessage(error.message || 'Ocorreu um erro ao cadastrar. Tente novamente.');
