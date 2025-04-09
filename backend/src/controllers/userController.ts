@@ -36,7 +36,7 @@ const editUserController = async (request: Request, response: Response): Promise
     const userId = request.params.id;
     const editedUserData: UserDTO = request.body;
 
-    if (!editedUserData.name || !editedUserData.email || !editedUserData.password || !editedUserData.registration) {
+    if (!editedUserData.name || !editedUserData.email || !editedUserData.registration) {
       return response.status(400).json({ error: "Missing required fields" });
     }
 
