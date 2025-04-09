@@ -10,11 +10,10 @@ export const userRegistration = async (user: User ): Promise<any> => {
 
   try {
     const response = await registerUser(user)
-
-    console.log(response);
     
 
     if(response.status === 201) {
+      
       const { email, password } = user;
 
       signUp(email,password);

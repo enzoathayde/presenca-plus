@@ -38,7 +38,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
     try {
       const response = await userRegistration({ name, email, password, course, registration, role: 'aluno' });
 
-      if(response.status === 200) {
+      if(response.status === 201) {
         setMessage('Cadastro realizado com sucesso!');
         setLoading(false);
         setTimeout(() => {
