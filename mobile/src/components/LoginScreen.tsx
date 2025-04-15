@@ -109,66 +109,60 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 120,
     resizeMode: 'contain',
-    marginBottom: 20
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    marginBottom: 20,
   },
   form: {
     width: '85%',
-    marginTop: 30
-  },
-  btn: {
-    width: '60%',
-    padding: 10,
-    marginTop: 20,
-    borderWidth: 1.5,
-    borderRadius: 4,
-    backgroundColor: '#DDD',
-    borderColor: '#000',
-  },
-  btn_text: { fontWeight: 'bold' },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-  input: {
-    backgroundColor: '#fff',
-    padding: 12,
-    marginBottom: 15,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    marginTop: 30,
+    alignItems: 'center',
   },
   textLogin: {
     fontSize: 20,
     marginBottom: 20,
     fontWeight: 'bold',
-    textAlign: 'left',
-  },
-  message: {
-    marginTop: 20,
     textAlign: 'center',
-    fontWeight: 'bold',
-    color: 'blue',
+    color: '#006653',
   },
-  smallPadding: {  
-    paddingTop: 10
+  input: {
+    backgroundColor: '#FFFFFF',
+    padding: 12,
+    marginBottom: 15,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    borderColor: '#006653',
+    width: '70%',
+    fontSize: 16,
+  },
+  btn: {
+    width: '35%',
+    padding: 12,
+    marginTop: 15,
+    borderRadius: 6,
+    backgroundColor: '#019F71',
+    alignItems: 'center',
+  },
+  btn_text: {
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontSize: 16,
   },
   errorMessage: {
     paddingTop: 30,
     fontSize: 14,
-    color: '#FC0505'
-  }
+    color: '#FC0505',
+    textAlign: 'center',
+  },
+  smallPadding: {
+    paddingTop: 10,
+  },
 });
 
 

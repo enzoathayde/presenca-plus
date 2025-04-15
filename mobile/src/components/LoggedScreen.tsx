@@ -1,16 +1,13 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet, TextInput, Image, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useState } from 'react';
-import { signIn, signUp } from '../services/auth.service';
-// import RegisterScreen from '../RegisterScreen';
-
-
 
 type RootStackParamList = {
   Login: undefined;
   Main: undefined;
   Register: undefined;
+  Logged: undefined;
 };
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
@@ -19,16 +16,16 @@ interface Props {
   navigation: LoginScreenNavigationProp;
 }
 
-const LoggedScreen: React.FC<Props> = ({ navigation }) => {
-
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState<string | null>("Você está logado")
+const LoggedScreen: React.FC<Props> = () => {
+  const [message] = useState<string>("Você está logado");
 
   return (
     <View style={styles.container}>
-      <Text style={styles.errorMessage}>{message}</Text>
+      <Image
+        source={require('../../assets/logo.png')}
+        style={styles.logo}
+      />
+      <Text style={styles.message}>{message}</Text>
     </View>
   );
 };
@@ -36,67 +33,23 @@ const LoggedScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
   },
   logo: {
-    width: 100,
-    height: 100,
+    width: 120,
+    height: 120,
     resizeMode: 'contain',
-    marginBottom: 20
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  form: {
-    width: '85%',
-    marginTop: 30
-  },
-  btn: {
-    width: '60%',
-    padding: 10,
-    marginTop: 20,
-    borderWidth: 1.5,
-    borderRadius: 4,
-    backgroundColor: '#DDD',
-    borderColor: '#000',
-  },
-  btn_text: { fontWeight: 'bold' },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: '80%',
-  },
-  input: {
-    backgroundColor: '#fff',
-    padding: 12,
-    marginBottom: 15,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
-  textLogin: {
-    fontSize: 20,
     marginBottom: 20,
-    fontWeight: 'bold',
-    textAlign: 'left',
   },
   message: {
-    marginTop: 20,
-    textAlign: 'center',
+    fontSize: 20,
+    color: '#006653',
     fontWeight: 'bold',
-    color: 'blue',
+    textAlign: 'center',
+    paddingHorizontal: 20,
   },
-  smallPadding: {  
-    paddingTop: 10
-  },
-  errorMessage: {
-    paddingTop: 30,
-    fontSize: 14,
-    color: '#FC0505'
-  }
 });
-
 
 export default LoggedScreen;
