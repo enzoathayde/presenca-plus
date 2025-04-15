@@ -5,11 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import LoginScreen from './src/components/LoginScreen';
 import FriendsScreen from './src/components/FriendsScreen';
 import HomeScreen from './src/components/HomeScreen';
-import { getFCMToken } from './src/services/notifications.service';
-import messaging from '@react-native-firebase/messaging';
-import { Alert, Platform} from 'react-native';
-import * as Notifications from 'expo-notifications';
-import RegisterScreen from './RegisterScreen';
+import RegisterScreen from './src/components/RegisterScreen';
 import LoggedScreen from './src/components/LoggedScreen';
 
 

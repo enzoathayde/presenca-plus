@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { userRegistration } from './src/services/auth.service';
+import { userRegistration } from '../services/auth.service';
 
 
 
@@ -120,6 +120,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
@@ -127,31 +128,36 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#006653',
     marginBottom: 20,
+    textAlign: 'center',
   },
   form: {
     width: '100%',
+    alignItems: 'center',
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: '#FFFFFF',
     padding: 12,
     marginBottom: 15,
     borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    borderWidth: 1.5,
+    borderColor: '#006653',
+    width: '80%',
+    fontSize: 16,
   },
   btn: {
-    width: '100%',
-    padding: 10,
+    width: '50%',
+    padding: 12,
     marginTop: 20,
-    backgroundColor: '#DDD',
-    borderColor: '#000',
-    borderWidth: 1.5,
-    borderRadius: 4,
+    backgroundColor: '#019F71',
+    borderRadius: 6,
+    alignItems: 'center',
   },
   btn_text: {
     fontWeight: 'bold',
-    textAlign: 'center',
+    fontSize: 16,
+    color: '#FFFFFF',
   },
   message: {
     marginTop: 10,
@@ -167,8 +173,10 @@ const styles = StyleSheet.create({
   },
   link_text: {
     textAlign: 'center',
-    color: '#007BFF',
+    color: '#006653',
+    fontWeight: '500',
     textDecorationLine: 'underline',
+    fontSize: 14,
   },
 });
 
