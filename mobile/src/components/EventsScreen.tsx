@@ -14,33 +14,46 @@ interface Props {
   navigation: HomeScreenNavigationProp;
 }
 
-interface User {
-  _id: string;
+interface EventLocation {
   name: string;
-  email: string;
-  course: string;
-  registration: string;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
+}
+
+interface Event {
+  _id: string;
+  title: string;
+  description: string;
+  startDate: string; 
+  endDate: string;   
+  location: EventLocation;
+  maxParticipants: number;
+  createdBy: string; 
+  type: "class" | "lecture" | "workshop" | "other";
+  category: string;
+  qrCodeData: string;
+  attendees: string[]; 
+  waitingList: string[]; 
+  createdAt: Date;  
+  updatedAt: Date;  
   __v: number;
 }
 
 
 const HomeScreen: React.FC<Props> = ({ navigation }) => {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<Event[]>([]);
 
   useEffect(() => {
-    // Construindo a URL para a API
-    const url = `${API_URL}/api/users/getAll`;
+    const url = `${API_URL}/api/events/getAll`;
 
-    // Fazendo a requisição
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
         
-        setUsers(data); // Atualizando o estado com os dados recebidos
+        setUsers(data); 
       })
       .catch((error) => {
         console.error("Error fetching users:", error);
@@ -58,8 +71,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
         keyExtractor={(item) => item._id} // Assumindo que o id é único
         renderItem={({ item }) => (
           <View>
-            <Text>{item.name}</Text>
-            <Text>{item.email}</Text>
+            <Text>{item.title}</Text>
           </View>
         )}
       />

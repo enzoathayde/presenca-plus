@@ -37,7 +37,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
       if(response) {
         setMessage(null)
-        navigation.replace('Logged');
+        navigation.replace('Main');
       }
 
 

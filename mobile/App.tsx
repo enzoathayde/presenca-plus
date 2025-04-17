@@ -4,7 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import LoginScreen from './src/components/LoginScreen';
 import FriendsScreen from './src/components/FriendsScreen';
-import HomeScreen from './src/components/HomeScreen';
+import EventsScreen from './src/components/EventsScreen';
 import { getFCMToken } from './src/services/notifications.service';
 import messaging from '@react-native-firebase/messaging';
 import { Alert, Platform} from 'react-native';
@@ -20,8 +20,8 @@ const Stack = createStackNavigator();
 // Navegação das abas (menu inferior)
 function TabNavigator() {
   return (
-    <Tab.Navigator>
-      <Tab.Screen name="Home" component={HomeScreen} />
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Screen name="Events" component={EventsScreen} />
       <Tab.Screen name="Friends" component={FriendsScreen} />
     </Tab.Navigator>
   );
