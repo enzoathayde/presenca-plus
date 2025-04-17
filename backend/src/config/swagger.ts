@@ -5,11 +5,11 @@ export const swaggerOptions: swaggerJsdoc.Options = {
     openapi: "3.0.0",
     info: {
       title: "Minha API",
-      version: "1.0.0",
-      description: "Documentação da API com Swagger",
+      version: "1.0.1",
+      description: "Documentação da API do Presença Plus com Swagger",
     },
   },
-  apis: ["./src/routes/*.ts"], // Caminho dos arquivos com comentários Swagger
+  apis: ["./src/routes/*.ts"], 
 };
 
 export const swaggerSpec = swaggerJsdoc(swaggerOptions);
