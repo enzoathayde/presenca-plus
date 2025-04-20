@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
@@ -7,7 +6,7 @@ import FriendsScreen from './src/components/FriendsScreen';
 import EventsScreen from './src/components/EventsScreen';
 import { getFCMToken } from './src/services/notifications.service';
 import messaging from '@react-native-firebase/messaging';
-import { Alert, Platform} from 'react-native';
+import { Alert, Image, Platform} from 'react-native';
 import * as Notifications from 'expo-notifications';
 import RegisterScreen from './RegisterScreen';
 import LoggedScreen from './src/components/LoggedScreen';
@@ -17,12 +16,29 @@ import LoggedScreen from './src/components/LoggedScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// Navegação das abas (menu inferior)
+
 function TabNavigator() {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen name="Events" component={EventsScreen} />
-      <Tab.Screen name="Friends" component={FriendsScreen} />
+      <Tab.Screen name="Events" component={EventsScreen} options={{
+        tabBarIcon: () => (
+          <Image
+            source={require('./assets/calendar-check.png')}
+            style={{ width: 20, height: 20 }}
+          />
+      ),
+      }}
+      />
+      <Tab.Screen name="Friends" component={FriendsScreen}
+         options={{
+          tabBarIcon: () => (
+            <Image
+              source={require('./assets/user.png')}
+              style={{ width: 20, height: 20 }}
+            />
+          )
+          }}
+       />
     </Tab.Navigator>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { API_URL } from '@env';
 
@@ -26,24 +26,24 @@ interface Event {
   _id: string;
   title: string;
   description: string;
-  startDate: string; 
-  endDate: string;   
+  startDate: string;
+  endDate: string;
   location: EventLocation;
   maxParticipants: number;
-  createdBy: string; 
+  createdBy: string;
   type: "class" | "lecture" | "workshop" | "other";
   category: string;
   qrCodeData: string;
-  attendees: string[]; 
-  waitingList: string[]; 
-  createdAt: Date;  
-  updatedAt: Date;  
+  attendees: string[];
+  waitingList: string[];
+  createdAt: Date;
+  updatedAt: Date;
   __v: number;
 }
 
-
-const HomeScreen: React.FC<Props> = ({ navigation }) => {
-  const [users, setUsers] = useState<Event[]>([]);
+const EventsScreen: React.FC<Props> = ({ navigation }) => {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [markedEvents, setMarkedEvents] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     const url = `${API_URL}/api/events/getAll`;
@@ -52,26 +52,62 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        
-        setUsers(data); 
+        setEvents(data);
       })
       .catch((error) => {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching events:", error);
       });
-  }, []); // O array vazio [] faz a requisição apenas uma vez, quando o componente for montado
+  }, []);
+
+  // Função para marcar/desmarcar um evento
+  const toggleMarkEvent = (eventId: string) => {
+    setMarkedEvents((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(eventId)) {
+        newSet.delete(eventId);
+      } else {
+        newSet.add(eventId);
+      }
+      return newSet;
+    });
+  };
 
   return (
-    <View>
-      <Text>Welcome to the Home Screen!</Text>
-      <Button title="Go to Friends" onPress={() => navigation.navigate('Friends')} />
+    <View style={styles.container}>
+      {/* Título da Lista */}
+      <Text style={styles.title}>Próximos Eventos</Text>
 
-      {/* Exibindo os usuários */}
+      {/* Exibindo os eventos */}
       <FlatList
-        data={users}
-        keyExtractor={(item) => item._id} // Assumindo que o id é único
+        data={events}
+        keyExtractor={(item) => item._id} 
         renderItem={({ item }) => (
-          <View>
-            <Text>{item.title}</Text>
+          <View style={styles.eventContainer}>
+            {/* Título do evento */}
+            <Text style={styles.eventTitle}>{item.title}</Text>
+
+            {/* Botão de marcação */}
+            <TouchableOpacity
+              style={[
+                styles.markButton,
+                markedEvents.has(item._id) && styles.markedButton,
+              ]}
+              onPress={() => toggleMarkEvent(item._id)}
+            >
+              <Text style={styles.markButtonText}>
+                {markedEvents.has(item._id) ? "Desmarcar" : "Marcar"}
+              </Text>
+            </TouchableOpacity>
+
+            {/* Botão de Marcar Presença */}
+            {markedEvents.has(item._id) && (
+              <TouchableOpacity
+                style={styles.presenceButton}
+                onPress={() => Alert.alert(`Presença marcada no evento: ${item.title}`)}
+              >
+                <Text style={styles.presenceButtonText}>Marcar Presença</Text>
+              </TouchableOpacity>
+            )}
           </View>
         )}
       />
@@ -79,4 +115,64 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-export default HomeScreen;
+export default EventsScreen;
+
+// Estilos
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: '#f5f5f5',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  eventContainer: {
+    backgroundColor: '#fff',
+    padding: 16,
+    marginBottom: 12,
+    borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  eventTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  markButton: {
+    backgroundColor: '#007bff',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  markedButton: {
+    backgroundColor: '#dc3545',
+  },
+  markButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  presenceButton: {
+    marginTop: 8,
+    backgroundColor: '#28a745',
+    paddingVertical: 12,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  presenceButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+});
