@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { userRegistration } from './src/services/auth.service';
-
-
+import { userRegistration } from '../src/services/auth.service';
+import { router } from 'expo-router';
 
 type RootStackParamList = {
   Register: undefined;
@@ -107,7 +106,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
             <TouchableOpacity style={styles.btn} onPress={handleSignUp} disabled={loading}>
               <Text style={styles.btn_text}>Cadastrar</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.link} onPress={() => navigation.replace('Login')}>
+            <TouchableOpacity style={styles.link} onPress={() => router.push("/login")}>
               <Text style={styles.link_text}>Já tem uma conta? Faça login</Text>
             </TouchableOpacity>
           </>

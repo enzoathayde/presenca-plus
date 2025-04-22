@@ -1,15 +1,14 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import LoginScreen from './src/components/LoginScreen';
-import FriendsScreen from './src/components/FriendsScreen';
-import EventsScreen from './src/components/EventsScreen';
-import { getFCMToken } from './src/services/notifications.service';
+
 import messaging from '@react-native-firebase/messaging';
 import { Alert, Image, Platform} from 'react-native';
 import * as Notifications from 'expo-notifications';
-import RegisterScreen from './RegisterScreen';
-import LoggedScreen from './src/components/LoggedScreen';
+import EventsScreen from '../app/events'
+import LoginScreen from './login';
+import RegisterScreen from '../app/register';
+
 
 
 
@@ -23,27 +22,17 @@ function TabNavigator() {
       <Tab.Screen name="Events" component={EventsScreen} options={{
         tabBarIcon: () => (
           <Image
-            source={require('./assets/calendar-check.png')}
+            source={require('../assets/calendar-check.png')}
             style={{ width: 20, height: 20 }}
           />
       ),
       }}
       />
-      <Tab.Screen name="Friends" component={FriendsScreen}
-         options={{
-          tabBarIcon: () => (
-            <Image
-              source={require('./assets/user.png')}
-              style={{ width: 20, height: 20 }}
-            />
-          )
-          }}
-       />
     </Tab.Navigator>
   );
 }
 
-export default function App() {
+export default function Index() {
 
   // useEffect(() => {
   //   const getToken = async () => {
@@ -84,13 +73,10 @@ export default function App() {
 
 
   return (
-    <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Logged" component={LoggedScreen} />
-        <Stack.Screen name="Register" component={RegisterScreen}/> 
+        <Stack.Screen name="login" component={LoginScreen} />
+        <Stack.Screen name="register" component={RegisterScreen}/> 
         <Stack.Screen name="Main" component={TabNavigator} />
       </Stack.Navigator>
-    </NavigationContainer>
   );
 }
