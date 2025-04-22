@@ -7,11 +7,15 @@ module.exports = {
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "plugins": [
+      "expo-router"
+    ],
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    
     "ios": {
       "supportsTablet": true
     },
@@ -26,10 +30,14 @@ module.exports = {
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "plugins": {
+
+    },
+    
     "extra": {
       "eas": {
         "projectId": "a9a41010-05c1-4f6b-9fa2-784b42a028b8"
       }
-    }
+    },
   }
 }

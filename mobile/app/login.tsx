@@ -2,9 +2,8 @@ import React from 'react';
 import { View, Text, Button, StyleSheet, TextInput, Image, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useState } from 'react';
-import { signIn, signUp } from '../services/auth.service';
-// import RegisterScreen from '../RegisterScreen';
-
+import { signIn, signUp } from '../src/services/auth.service';
+import { router } from 'expo-router'
 
 
 type RootStackParamList = {
@@ -37,7 +36,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
       if(response) {
         setMessage(null)
-        navigation.replace('Main');
+        router.push("/events")
       }
 
 
@@ -51,7 +50,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleSignUp = async () => {
-    navigation.replace('Register')
+    router.push("/register")
     // try {
     //   const response = await signUp(email, password);
     //   console.info(response)
@@ -66,7 +65,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     <View style={styles.container}>
 
       <Image
-        source={require('../../assets/logo.png')}
+        source={require('../assets/logo.png')}
         style={styles.logo}
       />
 
