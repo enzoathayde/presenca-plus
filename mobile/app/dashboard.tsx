@@ -2,8 +2,20 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { StackNavigationProp } from '@react-navigation/stack';
 
-const DashboardScreen = () => {
+type DashboardStackParamList = {
+  Dashboard: undefined;
+  Camera: undefined;
+  QRCode: undefined;
+};
+
+type DashboardScreenNavigationProp = StackNavigationProp<DashboardStackParamList, 'Dashboard'>;
+interface Props {
+  navigation: DashboardScreenNavigationProp;
+}
+
+const DashboardScreen: React.FC<Props> = ({ navigation }) => {
   const handleNavigateCamera = () => {
     router.push("/camera")
   }

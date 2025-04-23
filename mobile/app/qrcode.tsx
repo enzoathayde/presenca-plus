@@ -1,15 +1,20 @@
+import { StackNavigationProp } from '@react-navigation/stack';
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { FontAwesome5 } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
-const DashboardScreen = () => {
-  const handleNavigateCamera = () => {
-    router.push("/camera")
-  }
-  const handleNavigateQR = () => {
-    router.push("/qrcode")
-  };
+type DashboardStackParamList = {
+  Dashboard: undefined;
+  Camera: undefined;
+  QRCode: undefined;
+};
+
+type QRCodeScreenNavigationProp = StackNavigationProp<DashboardStackParamList, 'QRCode'>;
+
+interface Props {
+  navigation: QRCodeScreenNavigationProp;
+}
+
+const QRCodeScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header} />
@@ -71,5 +76,4 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
-
-export default DashboardScreen;
+export default QRCodeScreen
