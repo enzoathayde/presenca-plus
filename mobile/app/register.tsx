@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert, ImageBackground } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { userRegistration } from '../src/services/auth.service';
 import { router } from 'expo-router';
@@ -58,76 +58,87 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Cadastre-se</Text>
+    <ImageBackground source={require('../assets/background.png')} style={styles.background}>
 
-      <View style={styles.form}>
-        <TextInput
-          style={styles.input}
-          placeholder="Nome"
-          value={name}
-          onChangeText={setName}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="E-mail"
-          autoCapitalize="none"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Curso"
-          value={course}
-          onChangeText={setCourse}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Matrícula (opcional)"
-          value={registration}
-          onChangeText={setRegistration}
-        />
+      <View style={styles.container}>
+        <Text style={styles.title}>Cadastre-se</Text>
 
-        {/* Exibe mensagem de feedback */}
-        {message && <Text style={styles.message}>{message}</Text>}
+        <View style={styles.form}>
+          <TextInput
+            style={styles.input}
+            placeholder="Nome"
+            value={name}
+            onChangeText={setName}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="E-mail"
+            autoCapitalize="none"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Senha"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Curso"
+            value={course}
+            onChangeText={setCourse}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Matrícula (opcional)"
+            value={registration}
+            onChangeText={setRegistration}
+          />
 
-        {loading ? (
-          <ActivityIndicator size="small" color="#222" style={styles.smallPadding} />
-        ) : (
-          <>
-            <TouchableOpacity style={styles.btn} onPress={handleSignUp} disabled={loading}>
-              <Text style={styles.btn_text}>Cadastrar</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.link} onPress={() => router.push("/login")}>
-              <Text style={styles.link_text}>Já tem uma conta? Faça login</Text>
-            </TouchableOpacity>
-          </>
-        )}
+          {/* Exibe mensagem de feedback */}
+          {message && <Text style={styles.message}>{message}</Text>}
+
+          {loading ? (
+            <ActivityIndicator size="small" color="#222" style={styles.smallPadding} />
+          ) : (
+            <>
+              <TouchableOpacity style={styles.btn} onPress={handleSignUp} disabled={loading}>
+                <Text style={styles.btn_text}>Cadastrar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.link} onPress={() => router.push("/login")}>
+                <Text style={styles.link_text}>Já tem uma conta? Faça login</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    resizeMode: 'cover',
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 20,
+  },
+  container: {
+    width: "100%",
+    height: "100%",
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#006653',
+    color: '#02250c',
     marginBottom: 20,
     textAlign: 'center',
   },
@@ -136,7 +147,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#f4f4f4',
     padding: 12,
     marginBottom: 15,
     borderRadius: 6,
@@ -146,11 +157,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   btn: {
-    width: '50%',
+    width: '80%',
     padding: 12,
-    marginTop: 20,
-    backgroundColor: '#019F71',
+    marginTop: 15,
     borderRadius: 6,
+    backgroundColor: '#69b932',
     alignItems: 'center',
   },
   btn_text: {
