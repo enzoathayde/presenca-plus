@@ -36,7 +36,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
       if(response) {
         setMessage(null)
-        router.push("/events")
+        router.push("/dashboard")
       }
 
 
