@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ActivityIndicator, ImageBackground } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useState } from 'react';
 import { signIn } from '../src/services/auth.service';
@@ -62,60 +62,71 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
 
   return (
-    <View style={styles.container}>
+    <ImageBackground source={require('../assets/background.png')} style={styles.background}>
 
-      <Image
-        source={require('../assets/logo.png')}
-        style={styles.logo}
-      />
+      <View style={styles.container}>
 
-      <View style={styles.form}>
-        <Text style={styles.textLogin}>Faça login ou cadastre-se</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="E-mail"
-          autoCapitalize="none"
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
+        <Image
+          source={require('../assets/logo.png')}
+          style={styles.logo}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
-          secureTextEntry
-          value={password}
-          onChangeText={setPassword}
-        />
-        {/* <Button title="Entrar" onPress={() => navigation.replace('Main')} /> */}
-        {loading ? (
-          <ActivityIndicator size="small" color="#222"  style={styles.smallPadding}/>
-        ) : (
-          <>
-            <TouchableOpacity style={styles.btn} onPress={handleLogin} disabled={loading}>
-              <Text style={styles.btn_text}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.btn} onPress={handleSignUp} disabled={loading}>
-              <Text style={styles.btn_text}>Cadastre-se</Text>
-            </TouchableOpacity>
-          </>
-        )}
+
+        <View style={styles.form}>
+          <Text style={styles.textLogin}>Faça login ou cadastre-se</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="E-mail"
+            autoCapitalize="none"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Senha"
+            secureTextEntry
+            value={password}
+            onChangeText={setPassword}
+          />
+          {/* <Button title="Entrar" onPress={() => navigation.replace('Main')} /> */}
+          {loading ? (
+            <ActivityIndicator size="small" color="#222"  style={styles.smallPadding}/>
+          ) : (
+            <>
+              <TouchableOpacity style={styles.btn_login} onPress={handleLogin} disabled={loading}>
+                <Text style={styles.btn_text}>Login</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.btn_register} onPress={handleSignUp} disabled={loading}>
+                <Text style={styles.btn_text_register}>Cadastre-se</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+        <Text style={styles.errorMessage}>{message}</Text>
       </View>
-      <Text style={styles.errorMessage}>{message}</Text>
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  background: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    resizeMode: 'cover',
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  container: {
+    width: "100%",
+    height: "100%",
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   logo: {
-    width: 120,
-    height: 120,
-    resizeMode: 'contain',
+    width: 160,
+    height: 160,
     marginBottom: 20,
   },
   form: {
@@ -131,26 +142,41 @@ const styles = StyleSheet.create({
     color: '#006653',
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#f4f4f4',
     padding: 12,
     marginBottom: 15,
     borderRadius: 6,
     borderWidth: 1.5,
     borderColor: '#006653',
-    width: '70%',
+    width: '80%',
     fontSize: 16,
   },
-  btn: {
-    width: '35%',
+  btn_login: {
+    width: '80%',
     padding: 12,
     marginTop: 15,
     borderRadius: 6,
-    backgroundColor: '#019F71',
+    backgroundColor: '#69b932',
+    alignItems: 'center',
+  },
+  btn_register: {
+    width: '80%',
+    padding: 12,
+    marginTop: 15,
+    borderRadius: 6,
+    borderColor: '#69b932',
+    borderWidth: 1.5,
+    backgroundColor: '#f4f4f4',
     alignItems: 'center',
   },
   btn_text: {
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#f4f4f4',
+    fontSize: 16,
+  },
+  btn_text_register: {
+    fontWeight: 'bold',
+    color: '#69b932',
     fontSize: 16,
   },
   errorMessage: {
