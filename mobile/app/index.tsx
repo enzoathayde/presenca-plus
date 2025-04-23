@@ -1,10 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
-
-import messaging from '@react-native-firebase/messaging';
-import { Alert, Image, Platform} from 'react-native';
-import * as Notifications from 'expo-notifications';
+import { Image } from 'react-native';
 import EventsScreen from '../app/events'
 import LoginScreen from './login';
 import RegisterScreen from '../app/register';
