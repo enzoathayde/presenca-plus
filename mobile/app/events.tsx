@@ -1,18 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { API_URL } from '@env';
-
-type RootStackParamList = {
-  Home: undefined;
-  Friends: undefined;
-};
-
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
-
-interface Props {
-  navigation: HomeScreenNavigationProp;
-}
+// import { API_URL } from '@env';
 
 interface EventLocation {
   name: string;
@@ -41,12 +29,12 @@ interface Event {
   __v: number;
 }
 
-const EventsScreen: React.FC<Props> = ({ navigation }) => {
+const EventsScreen: React.FC<any> = ({ navigation }) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [markedEvents, setMarkedEvents] = useState<Set<string>>(new Set());
 
   useEffect(() => {
-    const url = `${API_URL}/api/events/getAll`;
+    const url = "";
 
     fetch(url)
       .then((response) => response.json())

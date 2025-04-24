@@ -1,21 +1,12 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert, ImageBackground } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { userRegistration } from '../src/services/auth.service';
+import userRegistration  from '../services/user.registration.service';
 import { router } from 'expo-router';
 
-type RootStackParamList = {
-  Register: undefined;
-  Login: undefined;
-};
 
-type RegisterScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Register'>;
 
-interface Props {
-  navigation: RegisterScreenNavigationProp;
-}
 
-const RegisterScreen: React.FC<Props> = ({ navigation }) => {
+const RegisterScreen: React.FC<any> = ({ navigation }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

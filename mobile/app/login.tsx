@@ -1,25 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ActivityIndicator, ImageBackground } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { useState } from 'react';
-import { signIn } from '../src/services/auth.service';
+import { signIn } from '../services/auth.service'
 import { router } from 'expo-router'
 
 
-type RootStackParamList = {
-  Login: undefined;
-  Main: undefined;
-  Register: undefined;
-  Logged: undefined;
-};
-
-type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
-
-interface Props {
-  navigation: LoginScreenNavigationProp;
-}
-
-const LoginScreen: React.FC<Props> = ({ navigation }) => {
+const LoginScreen: React.FC<any> = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -51,13 +37,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleSignUp = async () => {
     router.push("/register")
-    // try {
-    //   const response = await signUp(email, password);
-    //   console.info(response)
-    // } catch (error: any) {
-    //   console.log(error);
-
-    // }
   };
 
 
@@ -88,7 +67,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             value={password}
             onChangeText={setPassword}
           />
-          {/* <Button title="Entrar" onPress={() => navigation.replace('Main')} /> */}
           {loading ? (
             <ActivityIndicator size="small" color="#222"  style={styles.smallPadding}/>
           ) : (
