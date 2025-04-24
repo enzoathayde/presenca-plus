@@ -13,19 +13,8 @@ import {
   useCameraPermissions,
   FlashMode, // Importando os valores (enum)
 } from 'expo-camera';
-import { StackNavigationProp } from '@react-navigation/stack';
-type DashboardStackParamList = {
-  Dashboard: undefined;
-  Camera: undefined;
-  QRCode: undefined;
-};
 
-type CameraScreenNavigationProp = StackNavigationProp<DashboardStackParamList, 'Camera'>;
-interface Props {
-  navigation: CameraScreenNavigationProp;
-}
-
-const ScannerScreen: React.FC<Props> = ({ navigation }) => {
+const ScannerScreen: React.FC<any> = () => {
   const [facing, setFacing] = useState<CameraType>('back');
   const [flash, setFlash] = useState<FlashModeType>('off'); // Usando o tipo FlashModeType
   const [permission, requestPermission] = useCameraPermissions();
