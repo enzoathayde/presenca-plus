@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert, ImageBackground } from 'react-native';
-import userRegistration  from '../services/user.registration.service';
+import userRegistration from '../services/user.registration.service';
 import { router } from 'expo-router';
-
+import { signUp } from '../services/auth.service';
 
 
 
@@ -13,14 +13,13 @@ const RegisterScreen: React.FC<any> = ({ navigation }) => {
   const [course, setCourse] = useState('');
   const [registration, setRegistration] = useState('');
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+
 
   const handleSignUp = async () => {
     setLoading(true);
-    setMessage(null);
+
 
     if (!name || !email || !password || !course) {
-      setMessage('Todos os campos obrigatórios devem ser preenchidos.');
       setLoading(false);
       return;
     }
@@ -29,21 +28,20 @@ const RegisterScreen: React.FC<any> = ({ navigation }) => {
       const response = await userRegistration({ name, email, password, course, registration, role: 'aluno' });
 
       if(response.status === 201) {
-        setMessage('Cadastro realizado com sucesso!');
+        signUp(email, password);
         setLoading(false);
         setTimeout(() => {
-          navigation.replace('Login');
+          router.push('/dashboard');
         }, 2000);
         
       } else {
-        setMessage('Falha ao registrar usuário. Entre em contato com os administradores do sistema.');
+
         setLoading(false);
       }
 
   
     } catch (error: any) {
       console.error('Erro ao cadastrar:', error.message);
-      setMessage(error.message || 'Ocorreu um erro ao cadastrar. Tente novamente.');
       setLoading(false);
     }
   };
@@ -88,9 +86,6 @@ const RegisterScreen: React.FC<any> = ({ navigation }) => {
             value={registration}
             onChangeText={setRegistration}
           />
-
-          {/* Exibe mensagem de feedback */}
-          {message && <Text style={styles.message}>{message}</Text>}
 
           {loading ? (
             <ActivityIndicator size="small" color="#222" style={styles.smallPadding} />

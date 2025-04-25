@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ActivityIndicator, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ActivityIndicator, ImageBackground, ToastAndroid } from 'react-native';
 import { useState } from 'react';
 import { signIn } from '../services/auth.service'
 import { router } from 'expo-router'
+
 
 
 const LoginScreen: React.FC<any> = () => {
@@ -10,7 +11,6 @@ const LoginScreen: React.FC<any> = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState<string | null>(null)
 
   const handleLogin = async () => {
     setLoading(true)
@@ -21,17 +21,15 @@ const LoginScreen: React.FC<any> = () => {
       setLoading(false)
 
       if(response) {
-        setMessage(null)
         router.push("/dashboard")
       }
-
 
       return response
     } catch (error: any) {
       console.log(error);
 
       setLoading(false);
-      setMessage("Usuário/senha incorretos.")
+      ToastAndroid.show("Usuário/senha incorretos.", ToastAndroid.LONG);
     }
   };
 
@@ -80,7 +78,12 @@ const LoginScreen: React.FC<any> = () => {
             </>
           )}
         </View>
-        <Text style={styles.errorMessage}>{message}</Text>
+
+        <Image
+          source={require('../assets/logammon.png')}
+          style={styles.logammon}
+        />
+
       </View>
     </ImageBackground>
   );
@@ -103,18 +106,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   logo: {
-    width: 160,
-    height: 160,
-    marginBottom: 20,
+    marginTop: 20,
+    width: 140,
+    height: 140,
+  },
+  logammon: {
+    width: 60,
+    height: 60,
+    marginTop: 15,
   },
   form: {
-    width: '85%',
+    width: '100%',
     marginTop: 30,
     alignItems: 'center',
   },
   textLogin: {
     fontSize: 20,
-    marginBottom: 20,
+    marginBottom: 10,
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#02250c',
@@ -158,7 +166,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   errorMessage: {
-    paddingTop: 30,
+    paddingBottom: 15,
     fontSize: 14,
     color: '#FC0505',
     textAlign: 'center',
