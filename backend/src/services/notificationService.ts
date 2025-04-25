@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getAccessToken, projectId } from '../config/firebase';
-
+///coment
 export async function sendNotification(fcmToken: string, title: string, body: string) {
   const token = await getAccessToken();
 
