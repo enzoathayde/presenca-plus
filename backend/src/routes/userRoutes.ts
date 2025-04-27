@@ -1,5 +1,5 @@
 import express, { Express, Router } from "express";
-import { getAllUsersController, createNewUserController, editUserController, deleteUserController} from "../controllers/userController";
+import { getAllUsersController, getUserByEmailController, createNewUserController, editUserController, deleteUserController} from "../controllers/userController";
 
 
 
@@ -18,6 +18,8 @@ const userRouter = express.Router()
  *         description: Erro interno do servidor.
  */
 userRouter.get("/users/getAll", getAllUsersController)
+
+userRouter.get("/users/findByEmail", getUserByEmailController)
 
 /**
  * @swagger

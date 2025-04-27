@@ -3,14 +3,23 @@ import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ActivityInd
 import { useState } from 'react';
 import { signIn } from '../services/auth.service'
 import { router } from 'expo-router'
+import { useDispatch, useSelector } from 'react-redux';
+import { selectUsername, setUsername } from '../slices/userSlice';
+import findUserByEmail from '../services/user.signin.service';
+
+
+
 
 
 const LoginScreen: React.FC<any> = () => {
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  useSelector(selectUsername);
+  const dispatch = useDispatch();
 
   const handleLogin = async () => {
     setLoading(true)
@@ -18,14 +27,16 @@ const LoginScreen: React.FC<any> = () => {
     try {
       const response = await signIn(email, password);
       console.log(response);
-      setLoading(false)
+      
 
       if(response) {
+        const userResponse = await findUserByEmail(email);
+        dispatch(setUsername(userResponse.data[0].name));
         setMessage(null)
         router.push("/dashboard")
       }
 
-
+      setLoading(false)
       return response
     } catch (error: any) {
       console.log(error);

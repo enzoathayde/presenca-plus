@@ -1,9 +1,11 @@
-import { UserDTO } from "../dtos/UserDTO";
-import {  getAllUsersService, createNewUserService, editUserService, deleteUserService } from "../services/userServices";
+import { log } from "console";
+import { UserDTO, userEmailDTO } from "../dtos/UserDTO";
+import { getAllUsersService, createNewUserService, editUserService, deleteUserService, getUserByEmailService } from "../services/userServices";
 
 import { Request, Response } from "express";
 
 const getAllUsersController = async (_: Request, response: Response): Promise<any> => {
+
   try {
     const allUsers = await getAllUsersService();
     
@@ -13,8 +15,25 @@ const getAllUsersController = async (_: Request, response: Response): Promise<an
   }
 }
 
+const getUserByEmailController = async(request: Request, response: Response): Promise<any> =>  {
+
+  console.log(request.query);
+  
+  const userEmail: any = request.query.email;
+
+
+  try {
+    const foundedUser = await getUserByEmailService(userEmail);
+
+    return response.status(200).json(foundedUser)
+  } catch (error) {
+      
+  }
+}
+
 const createNewUserController = async (request: Request, response: Response): Promise<any> => {
   try {
+    
     const newUserData: UserDTO = request.body;
 
     if (!newUserData.name || !newUserData.email || !newUserData.password || !newUserData.registration) {
@@ -24,7 +43,14 @@ const createNewUserController = async (request: Request, response: Response): Pr
     const newUser = await createNewUserService(newUserData);
 
     return response.status(201).json(newUser);
-  } catch (error) {
+  } catch (error: any) {
+
+    console.log(error);
+    
+    if(error.code === 11000) {
+      return response.status(409).json({ error: "Email already exists in our records" })
+    }
+
     return response.status(500).json({error: "Internal Server Error"});
   }
 }
@@ -69,4 +95,4 @@ const deleteUserController = async (request: Request, response: Response): Promi
 
 
 
-export { getAllUsersController, createNewUserController, editUserController, deleteUserController };
+export { getAllUsersController, getUserByEmailController, createNewUserController, editUserController, deleteUserController };

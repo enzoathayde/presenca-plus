@@ -1,5 +1,6 @@
-import { UserDTO } from "../dtos/UserDTO";
-import { createNewUserRepository, deleteUserRepository, editUserRepository, getAllUsersRepository } from "../repository/userRepository";
+import { log } from "console";
+import { UserDTO, userEmailDTO } from "../dtos/UserDTO";
+import { createNewUserRepository, getUserByEmailRepository, deleteUserRepository, editUserRepository, getAllUsersRepository } from "../repository/userRepository";
 
 const getAllUsersService = async () => {
   try {
@@ -11,13 +12,24 @@ const getAllUsersService = async () => {
   }  
 }
 
+const getUserByEmailService = async (userEmail: string) => {
+  try {
+    const userFound = await getUserByEmailRepository(userEmail);
+
+    return userFound;
+  } catch (error) {
+      throw error;
+  }
+}
 const createNewUserService = async (user: UserDTO) => {
    try {
-      const newUser = await createNewUserRepository(user);
+      const newUser: Object = await createNewUserRepository(user);
 
       return newUser;
-   } catch (error) {
-      throw new Error("Failed to create a new User")
+   } catch (error: any) {
+      
+  
+      throw error;
    }
 }
 
@@ -42,4 +54,4 @@ const deleteUserService = async (userId: string) => {
   }
 }
 
-export { getAllUsersService, createNewUserService, editUserService, deleteUserService }
+export { getAllUsersService, getUserByEmailService, createNewUserService, editUserService, deleteUserService }

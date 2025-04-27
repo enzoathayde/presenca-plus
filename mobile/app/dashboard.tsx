@@ -2,6 +2,8 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useSelector } from 'react-redux';
+import { RootState } from '../types';
 
 type DashboardStackParamList = {
   Dashboard: undefined;
@@ -12,6 +14,9 @@ type DashboardStackParamList = {
 
 
 const DashboardScreen: React.FC<any> = ({ navigation }) => {
+
+  const userName = useSelector((state: RootState) => state.user.name);
+
   const handleNavigateCamera = () => {
     router.push("/camera")
   }
@@ -23,7 +28,7 @@ const DashboardScreen: React.FC<any> = ({ navigation }) => {
       <View style={styles.header} />
       <View style={styles.content}>
         <Text style={styles.welcomeText}>
-          Bem vindo, <Text style={{ fontWeight: 'bold' }}>Aluno</Text>
+          Bem vindo, <Text style={{ fontWeight: 'bold' }}>{userName}</Text>
         </Text>
 
         <View style={styles.grid}>

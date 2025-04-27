@@ -1,6 +1,6 @@
 import axios from "axios";
 import { User }  from '../interfaces/User'
-export const url = axios.create({baseURL: process.env.API_URL })
+export const url = axios.create({baseURL: 'http://localhost:2047' })
 
 const registerUser = (newUser: User): Promise<any> =>  {
 

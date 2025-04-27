@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert, ImageBackground } from 'react-native';
 import userRegistration  from '../services/user.registration.service';
 import { router } from 'expo-router';
+import { signUp } from '../services/auth.service';
 
 
 
@@ -28,22 +29,21 @@ const RegisterScreen: React.FC<any> = ({ navigation }) => {
     try {
       const response = await userRegistration({ name, email, password, course, registration, role: 'aluno' });
 
+      console.log(response);
+      
       if(response.status === 201) {
-        setMessage('Cadastro realizado com sucesso!');
+        signUp(email,password)
         setLoading(false);
         setTimeout(() => {
-          navigation.replace('Login');
+          router.push("/dashboard")
         }, 2000);
         
-      } else {
-        setMessage('Falha ao registrar usuário. Entre em contato com os administradores do sistema.');
-        setLoading(false);
       }
 
-  
     } catch (error: any) {
-      console.error('Erro ao cadastrar:', error.message);
-      setMessage(error.message || 'Ocorreu um erro ao cadastrar. Tente novamente.');
+      if(error.status === 409) {
+        setMessage("Já existe um usuário cadastrado com este email.")
+      }
       setLoading(false);
     }
   };

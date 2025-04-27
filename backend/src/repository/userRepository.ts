@@ -1,4 +1,5 @@
-import { UserDTO } from "../dtos/UserDTO";
+import { log } from "console";
+import { UserDTO, userEmailDTO } from "../dtos/UserDTO";
 import User from "../models/User"
 
 const getAllUsersRepository = async () => {
@@ -11,20 +12,35 @@ const getAllUsersRepository = async () => {
    }
 }
 
-const createNewUserRepository = async (user: UserDTO) => {
-   try {
-      const newUser = User.create(user)
-     
+const getUserByEmailRepository = async (userEmail: string) => {
 
-      return newUser;
+   try {
+      const userFound = await User.find({email: userEmail})
+
+      return userFound;
    } catch (error) {
-      throw new Error("Failed to create a new User")
+      throw error;
+   }
+
+}
+
+const createNewUserRepository = async (user: UserDTO) => {
+
+   console.log("achar email repository");
+
+   try {
+      const newUser = await User.create(user)
+      
+      return newUser;
+   } catch (error: any) {
+      console.log("repo", error);
+      throw error;
    }
 }
 
 const editUserRepository = async (userId: string, user: UserDTO) => {
    try {
-      const editedUser = User.findByIdAndUpdate(userId, user)
+      const editedUser = await User.findByIdAndUpdate(userId, user)
 
       return editedUser;
    } catch (error) {
@@ -35,7 +51,7 @@ const editUserRepository = async (userId: string, user: UserDTO) => {
 
 const deleteUserRepository = async (userId: string) => {
    try {
-      const editedUser = User.findByIdAndDelete(userId)
+      const editedUser = await User.findByIdAndDelete(userId)
 
       return editedUser;
    } catch (error) {
@@ -44,4 +60,4 @@ const deleteUserRepository = async (userId: string) => {
 }
 
 
-export { getAllUsersRepository, createNewUserRepository, editUserRepository ,deleteUserRepository }
+export { getAllUsersRepository, getUserByEmailRepository, createNewUserRepository, editUserRepository ,deleteUserRepository }

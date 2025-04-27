@@ -7,3 +7,7 @@ export interface UserDTO {
   role?: "admin" | "professor" | "aluno";
 }
 
+export interface userEmailDTO {
+  email: string;
+}
+
