@@ -1,5 +1,13 @@
 export interface RootState {
   user: {
-    name: string; // Nome do usuário
+    id: string
+    name: string;
+    email: string;
+    role: string; 
   };
+
+  attendance: {
+    typeAttendance: string;
+    eventId: string;
+  }
 }

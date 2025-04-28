@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
+import fetchAllEvents from '../services/event.service';
+import { router } from 'expo-router';
+import { useDispatch, useSelector } from 'react-redux';
+import { setNativeProps } from 'react-native-reanimated';
+import { selectAttendance, setAttendanceType, setEventId } from '../slices/attendanceSlice';
+
 // import { API_URL } from '@env';
+
 
 interface EventLocation {
   name: string;
@@ -31,71 +38,80 @@ interface Event {
 
 const EventsScreen: React.FC<any> = ({ navigation }) => {
   const [events, setEvents] = useState<Event[]>([]);
-  const [markedEvents, setMarkedEvents] = useState<Set<string>>(new Set());
+  const [markedEvent, setMarkedEvent] = useState<any>(null);
+  const dispatch = useDispatch();
+  useSelector(selectAttendance);
+ 
 
   useEffect(() => {
-    const url = "";
 
-    fetch(url)
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        setEvents(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching events:", error);
-      });
+    const fetchEvents = async () => {
+      try {
+        const response: any = await fetchAllEvents();
+
+        setEvents(response.data)
+
+      } catch (error) {
+        throw error;
+      }
+
+    }
+
+    fetchEvents()
+
   }, []);
 
-  // Função para marcar/desmarcar um evento
   const toggleMarkEvent = (eventId: string) => {
-    setMarkedEvents((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(eventId)) {
-        newSet.delete(eventId);
-      } else {
-        newSet.add(eventId);
-      }
-      return newSet;
-    });
+    setMarkedEvent(eventId)
   };
+
+  const toogleCancelMarkEvent = () => {
+      setMarkedEvent(null)
+
+  }
+
+  const setAttendanceMode = (attendanceType: string, eventId: string) => {
+      dispatch(setAttendanceType(''))
+      dispatch(setEventId('')) 
+      dispatch(setAttendanceType(attendanceType))
+      dispatch(setEventId(eventId)) 
+      router.push('/camera')
+  }
 
   return (
     <View style={styles.container}>
-      {/* Título da Lista */}
       <Text style={styles.title}>Próximos Eventos</Text>
 
-      {/* Exibindo os eventos */}
       <FlatList
         data={events}
-        keyExtractor={(item) => item._id} 
+        keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           <View style={styles.eventContainer}>
-            {/* Título do evento */}
             <Text style={styles.eventTitle}>{item.title}</Text>
 
-            {/* Botão de marcação */}
-            <TouchableOpacity
-              style={[
-                styles.markButton,
-                markedEvents.has(item._id) && styles.markedButton,
-              ]}
-              onPress={() => toggleMarkEvent(item._id)}
-            >
-              <Text style={styles.markButtonText}>
-                {markedEvents.has(item._id) ? "Desmarcar" : "Marcar"}
-              </Text>
-            </TouchableOpacity>
+            <Text style={styles.eventDescription}>{item.description}</Text>
 
-            {/* Botão de Marcar Presença */}
-            {markedEvents.has(item._id) && (
-              <TouchableOpacity
-                style={styles.presenceButton}
-                onPress={() => Alert.alert(`Presença marcada no evento: ${item.title}`)}
-              >
-                <Text style={styles.presenceButtonText}>Marcar Presença</Text>
+            {!(markedEvent === item._id) && (
+              <TouchableOpacity style={styles.markButton} onPress={() => toggleMarkEvent(item._id)}>
+                <Text style={styles.markButtonText}> Marcar Presença</Text>
               </TouchableOpacity>
             )}
+
+            {(markedEvent === item._id) && (
+              <>
+              <Text style={styles.titleMarked}>Informe como vocẽ quer marcar sua presença</Text>
+              <TouchableOpacity style={styles.markButton} onPress={() => setAttendanceMode('qr', item._id)}>
+                <Text style={styles.markButtonText}> QR code</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.markButton} onPress={() => setAttendanceMode('manual', item._id)}>
+                <Text style={styles.markButtonText}> Foto com localização </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.markedButton} onPress={() => toogleCancelMarkEvent()}>
+                <Text style={styles.markButtonText}> Cancelar Marcação </Text>
+              </TouchableOpacity>
+              </>
+            )}
+
           </View>
         )}
       />
@@ -113,11 +129,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 16,
+    marginTop: 10,
+    marginBottom: 35,
     textAlign: 'center',
+  },
+  eventDescription: {
+    marginBlock: 12,
+    fontSize: 16
+  },
+  titleMarked: {
+    marginTop: 20,
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
   eventContainer: {
     backgroundColor: '#fff',
@@ -136,7 +162,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   markButton: {
-    backgroundColor: '#007bff',
+    marginTop: 12,
+    backgroundColor: '#69b932',
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 4,
@@ -144,6 +171,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   markedButton: {
+    marginTop: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: '#dc3545',
   },
   markButtonText: {

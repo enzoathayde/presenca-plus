@@ -4,6 +4,7 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useSelector } from 'react-redux';
 import { RootState } from '../types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type DashboardStackParamList = {
   Dashboard: undefined;
@@ -15,7 +16,10 @@ type DashboardStackParamList = {
 
 const DashboardScreen: React.FC<any> = ({ navigation }) => {
 
-  const userName = useSelector((state: RootState) => state.user.name);
+  const userName = AsyncStorage.getItem('nome').then(res =>{return res})
+
+  const userNameAsString = userName;
+  const userId = AsyncStorage.getItem('id')
 
   const handleNavigateCamera = () => {
     router.push("/camera")
@@ -23,12 +27,18 @@ const DashboardScreen: React.FC<any> = ({ navigation }) => {
   const handleNavigateQR = () => {
     router.push("/qrcode")
   };
+
+  const handleNavigateEvents = () => {
+    router.push("/events")
+  }
+
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header} />
       <View style={styles.content}>
         <Text style={styles.welcomeText}>
-          Bem vindo, <Text style={{ fontWeight: 'bold' }}>{userName}</Text>
+          {/* Bem vindo, <Text style={{ fontWeight: 'bold' }}>{userNameAsString}</Text> */}
         </Text>
 
         <View style={styles.grid}>
@@ -36,6 +46,12 @@ const DashboardScreen: React.FC<any> = ({ navigation }) => {
             <FontAwesome5 name="camera" size={40} color="white" />
             <Text style={styles.cardText}>Camera</Text>
           </TouchableOpacity>
+
+          <TouchableOpacity style={styles.card} onPress={handleNavigateEvents}>
+            <FontAwesome5 name="calendar-plus" size={40} color="white" />
+            <Text style={styles.cardText}>Eventos</Text>
+          </TouchableOpacity>
+
 
           <TouchableOpacity style={styles.card} onPress={handleNavigateQR}>
             <FontAwesome5 name="qrcode" size={40} color="white" />
@@ -90,6 +106,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   cardText: {
+    paddingTop: 10,
     color: 'white',
     textAlign: 'center',
     marginTop: 10,

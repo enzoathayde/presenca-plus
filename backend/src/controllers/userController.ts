@@ -1,5 +1,6 @@
 import { log } from "console";
-import { UserDTO, userEmailDTO } from "../dtos/UserDTO";
+import { UserDTO } from "../dtos/UserDTO";
+
 import { getAllUsersService, createNewUserService, editUserService, deleteUserService, getUserByEmailService } from "../services/userServices";
 
 import { Request, Response } from "express";
@@ -16,8 +17,6 @@ const getAllUsersController = async (_: Request, response: Response): Promise<an
 }
 
 const getUserByEmailController = async(request: Request, response: Response): Promise<any> =>  {
-
-  console.log(request.query);
   
   const userEmail: any = request.query.email;
 

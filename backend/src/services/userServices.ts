@@ -1,10 +1,11 @@
 import { log } from "console";
-import { UserDTO, userEmailDTO } from "../dtos/UserDTO";
+import { UserDTO } from "../dtos/UserDTO";
+
 import { createNewUserRepository, getUserByEmailRepository, deleteUserRepository, editUserRepository, getAllUsersRepository } from "../repository/userRepository";
 
 const getAllUsersService = async () => {
   try {
-    const allUsers = await getAllUsersRepository();  
+    const allUsers = await getAllUsersRepository();     
 
     return allUsers;
   } catch (error) {

@@ -3,8 +3,7 @@ import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ActivityInd
 import { useState } from 'react';
 import { signIn } from '../services/auth.service'
 import { router } from 'expo-router'
-import { useDispatch, useSelector } from 'react-redux';
-import { selectUsername, setUsername } from '../slices/userSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import findUserByEmail from '../services/user.signin.service';
 
 
@@ -13,25 +12,36 @@ import findUserByEmail from '../services/user.signin.service';
 
 const LoginScreen: React.FC<any> = () => {
 
-  const [email, setEmail] = useState('');
+  const [emailData, setEmailData] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-
-  useSelector(selectUsername);
-  const dispatch = useDispatch();
 
   const handleLogin = async () => {
     setLoading(true)
 
     try {
-      const response = await signIn(email, password);
-      console.log(response);
+      const response = await signIn(emailData, password);
       
-
       if(response) {
-        const userResponse = await findUserByEmail(email);
-        dispatch(setUsername(userResponse.data[0].name));
+        const response = await findUserByEmail(emailData);
+
+        const { _id ,name, email, role, course} = response.data[0];
+
+
+        AsyncStorage.setItem('id', _id)
+        AsyncStorage.setItem('nome', name)
+        AsyncStorage.setItem('email', email)
+        AsyncStorage.setItem('perfil', role)
+        AsyncStorage.setItem('curso', course)
+
+        console.log(name);
+        console.log(email);
+        console.log(role);
+        console.log(course);
+        
+        
+
         setMessage(null)
         router.push("/dashboard")
       }
@@ -68,8 +78,8 @@ const LoginScreen: React.FC<any> = () => {
             placeholder="E-mail"
             autoCapitalize="none"
             keyboardType="email-address"
-            value={email}
-            onChangeText={setEmail}
+            value={emailData}
+            onChangeText={setEmailData}
           />
           <TextInput
             style={styles.input}

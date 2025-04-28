@@ -1,23 +1,37 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Alert,
-} from 'react-native';
+import React, { useState, useRef } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import {
   CameraView,
   CameraType,
-  FlashMode as FlashModeType, // Importando o tipo
   useCameraPermissions,
-  FlashMode, // Importando os valores (enum)
 } from 'expo-camera';
+import * as Location from 'expo-location'; 
+import * as Device from 'expo-device'; 
+import { router } from 'expo-router';
+import { useSelector } from 'react-redux';
+import { RootState } from '../types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import createNewAttendance from '../services/attendance.service';
+
+// Forçando a tipagem manual para o CameraView
+type CameraViewType = {
+  takePictureAsync: () => Promise<{ uri: string }>;
+};
 
 const ScannerScreen: React.FC<any> = () => {
+  const typeAttendance = useSelector(
+    (state: RootState) => state.attendance.typeAttendance
+  );
+  const eventId = useSelector(
+    (state: RootState) => state.attendance.eventId
+  )
+
+  console.log('Tipo de presença solicitada:', typeAttendance); 
+  console.log('id do evento:', eventId); 
+
   const [facing, setFacing] = useState<CameraType>('back');
-  const [flash, setFlash] = useState<FlashModeType>('off'); // Usando o tipo FlashModeType
   const [permission, requestPermission] = useCameraPermissions();
+  const cameraRef = useRef<CameraViewType | null>(null);
 
   if (!permission) return <View />;
   if (!permission.granted) {
@@ -33,45 +47,128 @@ const ScannerScreen: React.FC<any> = () => {
     );
   }
 
+  // Função para ler QR Code
   const handleBarcodeScanned = ({ data }: { data: string }) => {
     Alert.alert('QR Code Lido', `Conteúdo: ${data}`);
+    router.back(); // Volta para a tela anterior
   };
+
+  const takePicture = async () => {
+    if (cameraRef.current) {
+      try {
+        // Captura a foto
+        const photo = await cameraRef.current.takePictureAsync();
+        console.log('Foto Tirada', `Foto salva em: ${photo.uri}`);
+
+        // Solicita permissão para acessar a localização
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert('Permissão negada', 'A localização não pode ser acessada.');
+          return;
+        }
+
+        // Obtém a localização atual
+        const location = await Location.getCurrentPositionAsync({});
+        const { latitude, longitude } = location.coords;
+
+        // Obtém informações do dispositivo
+        const deviceInfo = {
+          brand: Device.brand,
+          modelName: Device.modelName,
+          osName: Device.osName,
+          osVersion: Device.osVersion,
+        };
+
+        // Obtém o ID do usuário do AsyncStorage
+        const userIdResponse = await AsyncStorage.getItem('id');
+
+        // Cria o objeto de presença
+        const attendanceObject = {
+          eventId: eventId,
+          userId: userIdResponse,
+          checkInMethod: typeAttendance,
+          checkInTime: Date.now(),
+          location: {
+            lat: latitude,
+            long: longitude,
+          },
+          deviceInfo: deviceInfo,
+        };
+
+        console.log("OBJETO A SER ENCAMINHADO PRO BACKEND", attendanceObject);
+
+        // Envia os dados para o backend usando a service
+        const response = await createNewAttendance(attendanceObject);
+
+        console.log(response)
+
+
+
+        // Feedback de sucesso
+        Alert.alert('Sucesso', 'Presença registrada com sucesso!');
+        router.back();
+      } catch (error: any) {
+
+        if(error.status == 400) {
+          console.log('Erro ao registrar presença: Fora de alcance',);
+        }
+        console.error('Erro ao registrar presença:', error.message);
+        Alert.alert('Erro', error.message || 'Não foi possível completar a operação.');
+      }
+    }
+  }
 
   return (
     <View style={styles.container}>
-      <CameraView
-        style={styles.camera}
-        facing={facing}
-        flash={flash}
-        barcodeScannerSettings={{
-          barcodeTypes: ['qr'],
-        }}
-        onBarcodeScanned={handleBarcodeScanned}
-      >
-        <View style={styles.overlay}>
-          <View style={styles.frame} />
-          <Text style={styles.instruction}>Aponte a câmera para o QR Code</Text>
-
-          <View style={styles.controls}>
-            <TouchableOpacity onPress={() => setFacing(facing === 'back' ? 'front' : 'back')}>
-              <Text style={styles.controlText}>🔄 Inverter</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() =>
-                setFlash(flash === 'off' ? 'on' : 'off')
-              }
-            >
-              <Text style={styles.controlText}>
-                {flash === 'on' ? '💡 Flash ON' : '🔦 Flash OFF'}
-              </Text>
-            </TouchableOpacity>
+      {/* Renderização condicional com base no tipo de presença */}
+      {typeAttendance === 'qr' && (
+        <CameraView
+          style={styles.camera}
+          facing={facing}
+          barcodeScannerSettings={{
+            barcodeTypes: ['qr'],
+          }}
+          onBarcodeScanned={handleBarcodeScanned}
+        >
+          <View style={styles.overlay}>
+            <View style={styles.frame} />
+            <Text style={styles.instruction}>Aponte a câmera para o QR Code</Text>
           </View>
+        </CameraView>
+      )}
+
+      {typeAttendance === 'manual' && (
+        <CameraView
+          ref={cameraRef as any}
+          style={styles.camera}
+          facing={facing}
+        >
+          <View style={styles.overlay}>
+            <View style={styles.frame} />
+            <Text style={styles.instruction}>Tire uma foto para marcar presença</Text>
+
+            <View style={styles.controls}>
+              <TouchableOpacity onPress={() => setFacing(facing === 'back' ? 'front' : 'back')}>
+                <Text style={styles.controlText}>🔄 Inverter</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={takePicture}>
+                <Text style={styles.controlText}>📸 Tirar Foto</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </CameraView>
+      )}
+
+      {/* Caso o tipo de presença não seja reconhecido */}
+      {typeAttendance !== 'qr' && typeAttendance !== 'manual' && (
+        <View style={styles.container}>
+          <Text style={styles.message}>Tipo de presença inválido.</Text>
         </View>
-      </CameraView>
+      )}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {

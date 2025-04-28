@@ -1,5 +1,5 @@
 import { log } from "console";
-import { UserDTO, userEmailDTO } from "../dtos/UserDTO";
+import { UserDTO } from "../dtos/UserDTO";
 import User from "../models/User"
 
 const getAllUsersRepository = async () => {
