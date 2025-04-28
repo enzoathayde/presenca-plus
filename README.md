@@ -1,5 +1,9 @@
 # Como rodar o projeto 
 
+## Ambiente
+
+- Modifique o Node.js para 20.18
+
 ## backend - comandos
 
 - Dê cd backend
