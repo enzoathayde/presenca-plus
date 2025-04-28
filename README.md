@@ -17,8 +17,8 @@
 
 ## Acesso ao banco de dados
 
-- Correção: transferidas as responsabiilidades para um banco de dados local rodando na porta padrão 27017. O banco deve ser criado com o seguintes requisitos:
 - Nome do db: presenca_plus
-- Coleções: users , events
+- Coleções: users , events, attendances
+- Porta de saída do banco de dados: Padrão 27017
 
 
