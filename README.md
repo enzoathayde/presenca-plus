@@ -9,6 +9,7 @@
 - Dê cd backend
 - npm i --legacy-peer-deps (resolve conflito de dependência ao utilizar o swagger no projeto)
 - npm run dev
+- Acesse os endpoints com Swagger através de localhost:2047/docs
 
 
 ## front end - comandos 
