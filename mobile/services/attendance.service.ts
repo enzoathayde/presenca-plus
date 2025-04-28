@@ -13,5 +13,20 @@ const createNewAttendance = (attendanceObj: any): Promise<any> =>  {
  
 }
 
+const findAttendancesByUserId = (userId: any): Promise<any> => {
+  try {
 
-export default createNewAttendance;
+    const params: any = new URLSearchParams();
+    params.append('id', userId)
+    console.log(params);
+    
+    const response = url.get('/api/attendance/findByUserId', {params})
+
+    return response
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+export {findAttendancesByUserId, createNewAttendance};

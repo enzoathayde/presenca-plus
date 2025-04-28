@@ -11,7 +11,7 @@ import { router } from 'expo-router';
 import { useSelector } from 'react-redux';
 import { RootState } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import createNewAttendance from '../services/attendance.service';
+import { createNewAttendance } from '../services/attendance.service';
 
 // Forçando a tipagem manual para o CameraView
 type CameraViewType = {

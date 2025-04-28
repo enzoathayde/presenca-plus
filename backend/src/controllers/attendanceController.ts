@@ -3,6 +3,7 @@ import { AttendanceDTO } from "../dtos/AttendanceDTO";
 import AttendanceModel from "../models/Attendance";
 import EventModel from "../models/Event";
 import { log } from "console";
+import Attendance from "../models/Attendance";
 
 // Função para calcular a distância usando a fórmula de Haversine
 const calculateDistance = (
@@ -106,4 +107,23 @@ const createAttendanceController = async (request: Request, response: Response):
   }
 };
 
-export default createAttendanceController;
+const findAttendancesByUser = async (request: Request, response: Response): Promise<any> => {
+
+  const user: any = request.query.id;
+
+  try {
+    const attendancesResponse: any = await Attendance.find({ userId: user })
+
+    return response.status(200).json(attendancesResponse);
+  } catch (error) {
+    return response.status(500).json({ error: "Failed to fetch Users"})
+  }
+  
+
+  
+
+  // console.log(attendancesResponse)
+
+
+}
+export { findAttendancesByUser, createAttendanceController };

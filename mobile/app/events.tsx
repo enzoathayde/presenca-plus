@@ -5,6 +5,9 @@ import { router } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { setNativeProps } from 'react-native-reanimated';
 import { selectAttendance, setAttendanceType, setEventId } from '../slices/attendanceSlice';
+import { findAttendancesByUserId } from '../services/attendance.service';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 // import { API_URL } from '@env';
 
@@ -39,11 +42,21 @@ interface Event {
 const EventsScreen: React.FC<any> = ({ navigation }) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [markedEvent, setMarkedEvent] = useState<any>(null);
+  const [attendancesByUserLogged, setattendancesByUserLogged] = useState<any>(null)
   const dispatch = useDispatch();
   useSelector(selectAttendance);
+  const [userId, setUserId] = useState<any>(null)
+  const [attendancesFromLoggedUser, setAttendancesFromLoggedUser] = useState<any>([])
+
  
 
   useEffect(() => {
+
+    const fetchUserId = async () => {
+      const response = await AsyncStorage.getItem('id')
+      
+      setUserId(response)
+    }
 
     const fetchEvents = async () => {
       try {
@@ -57,9 +70,29 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
 
     }
 
+    fetchUserId()
     fetchEvents()
 
   }, []);
+
+  useEffect(() => {
+
+    const fetchAttendancesByUser = async (userId: string) => {
+      try {
+        const response: any = await findAttendancesByUserId(userId);
+      
+          setAttendancesFromLoggedUser(response.data)
+        
+      } catch (error) {
+        throw error;
+      }
+    }
+
+    if(userId) {
+      fetchAttendancesByUser(userId)
+    }
+       
+  }, [userId])
 
   const toggleMarkEvent = (eventId: string) => {
     setMarkedEvent(eventId)
@@ -91,9 +124,15 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
 
             <Text style={styles.eventDescription}>{item.description}</Text>
 
-            {!(markedEvent === item._id) && (
+            {!attendancesFromLoggedUser.some((e: any) => e.eventId === item._id ) && (
               <TouchableOpacity style={styles.markButton} onPress={() => toggleMarkEvent(item._id)}>
                 <Text style={styles.markButtonText}> Marcar Presença</Text>
+              </TouchableOpacity>
+            )}
+
+            {attendancesFromLoggedUser.some((e: any) => e.eventId === item._id ) && (
+              <TouchableOpacity style={styles.markButton} disabled>
+                <Text style={styles.markButtonText}> Presença registrada </Text>
               </TouchableOpacity>
             )}
 
