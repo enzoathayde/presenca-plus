@@ -5,6 +5,7 @@ import * as Location from 'expo-location';
 import * as Device from 'expo-device';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
+import MaskInput from 'react-native-mask-input';
 
 
 export default function RegisterEventQuickForm() {
@@ -56,7 +57,7 @@ export default function RegisterEventQuickForm() {
 
 
   const handleRegister = async () => {
-    if (!title || !description || !locationName || !maxParticipants || !type || !category || !qrCodeData) {
+    if (!title || !description || !locationName || !maxParticipants || !type || !category) {
       setError('Por favor, preencha todos os campos obrigatórios.');
       return;
     }
@@ -101,17 +102,81 @@ export default function RegisterEventQuickForm() {
 
       <TextInput placeholder="Título" style={styles.input} value={title} onChangeText={setTitle} />
       <TextInput placeholder="Descrição" style={styles.inputDesc} value={description} onChangeText={setDescription} multiline />
-      <TextInput placeholder="Data início (DD/MM/YYYY)" style={styles.input} value={startDate} onChangeText={setStartDate} />
-      <TextInput placeholder="Hora início (HH:mm)" style={styles.input} value={startTime} onChangeText={setStartTime} keyboardType="numbers-and-punctuation" />
-      <TextInput placeholder="Data fim (DD/MM/YYYY)" style={styles.input} value={endDate} onChangeText={setEndDate} />
-      <TextInput placeholder="Hora fim (HH:mm)" style={styles.input} value={endTime} onChangeText={setEndTime} keyboardType="numbers-and-punctuation" />
+
+      <MaskInput
+        style={styles.input}
+        placeholder="Data início (DD/MM/YYYY)"
+        value={startDate}
+        onChangeText={(text) => setStartDate(text)}
+        mask={[
+          /\d/,
+          /\d/,
+          '/',
+          /\d/,
+          /\d/,
+          '/',
+          /\d/,
+          /\d/,
+          /\d/,
+          /\d/,
+        ]} // DD/MM/YYYY
+        keyboardType="number-pad"
+      />
+
+      <MaskInput
+        style={styles.input}
+        placeholder="Hora início (HH:mm)"
+        value={startTime}
+        onChangeText={(text) => setStartTime(text)}
+        mask={[
+          /\d/,
+          /\d/,
+          ':',
+          /\d/,
+          /\d/,
+        ]} // HH:mm
+        keyboardType="number-pad"
+      />
+
+      <MaskInput
+        style={styles.input}
+        placeholder="Data fim (DD/MM/YYYY)"
+        value={endDate}
+        onChangeText={(text) => setEndDate(text)}
+        mask={[
+          /\d/,
+          /\d/,
+          '/',
+          /\d/,
+          /\d/,
+          '/',
+          /\d/,
+          /\d/,
+          /\d/,
+          /\d/,
+        ]}
+        keyboardType="number-pad"
+      />
+      <MaskInput
+        style={styles.input}
+        placeholder="Hora fim (HH:mm)"
+        value={endTime}
+        onChangeText={(text) => setEndTime(text)}
+        mask={[
+          /\d/,
+          /\d/,
+          ':',
+          /\d/,
+          /\d/,
+        ]}
+        keyboardType="number-pad"
+      />
 
 
       <TextInput placeholder="Nome do local" style={styles.input} value={locationName} onChangeText={setLocationName} />
       <TextInput placeholder="Máximo de participantes" keyboardType="numeric" style={styles.input} value={maxParticipants} onChangeText={setMaxParticipants} />
       <TextInput placeholder="Tipo (ex: workshop)" style={styles.input} value={type} onChangeText={setType} />
       <TextInput placeholder="Categoria (ex: tecnologia)" style={styles.input} value={category} onChangeText={setCategory} />
-      <TextInput placeholder="Link QR Code" style={styles.input} value={qrCodeData} onChangeText={setQrCodeData} />
 
       <View style={styles.btnContainer}>
         <TouchableOpacity style={styles.btn} onPress={() => router.push('/events')}>

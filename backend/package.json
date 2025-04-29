@@ -19,7 +19,8 @@
     "react-native-screens": "~4.4.0",
     "swagger-express-ts": "^1.1.0",
     "swagger-jsdoc": "^6.2.8",
-    "swagger-ui-express": "^5.0.1"
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^11.1.0"
   },
   "scripts": {
     "start": "node dist/index.js",

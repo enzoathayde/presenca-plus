@@ -5,6 +5,7 @@ import EventModel from "../models/Event";
 import { log } from "console";
 import Attendance from "../models/Attendance";
 import User from "../models/User";
+import { EventDTO } from "../dtos/EventDTO";
 
 
 const calculateDistance = (
@@ -37,51 +38,70 @@ const toRadians = (degrees: number): number => {
 
 const createAttendanceController = async (request: Request, response: Response): Promise<any> => {
 
+
+  
   try {
     const attendanceData: AttendanceDTO = request.body;
 
-    const event = await EventModel.findById(attendanceData.eventId);  
+    if(attendanceData.checkInMethod === 'manual'){
+      const event: any = await EventModel.findById(attendanceData.eventId);  
+      const userExist = await User.findById(attendanceData.userId);
+  
+      if(!userExist) {
+        return response.status(404).json({ error: "User not found" });
+      }
+  
+      
+      if (!event) {
+        return response.status(404).json({ error: "Event not found" });
+      } else {
+          let attendees = event.attendees
+        
+  
+          const alreadyRegistered = attendees.some(
+            (attendee: any) => attendee.userId.toString() === attendanceData.userId
+          );
+        
+          if (alreadyRegistered) {
+            return response.status(400).json({ error: "User was attended on this event" });
+          }
     
-    if (!event) {
-      return response.status(404).json({ error: "Event not found" });
+          event.attendees.push({
+            userId: attendanceData.userId,
+            status: "registered"
+          });
+          console.log(event.attendees);
+          await event.save()
+      }
+
+      const eventLat = event.location.coordinates.lat;
+      const eventLng = event.location.coordinates.lng;
+      const userLat = attendanceData.location.lat;
+      const userLng = attendanceData.location.long;
+  
+
+      const distanceInKm = calculateDistance(eventLat, eventLng, userLat, userLng);
+      const distanceInMeters = distanceInKm * 1000; 
+      const maxAllowedDistance = 50;
+
+      if (distanceInMeters > maxAllowedDistance) {
+        return response.status(400).json({
+          error: `You are too far from the event location. Distance: ${distanceInMeters.toFixed(
+            2
+          )} meters`,
+        });
+      }
+  
+      
+      if (!attendanceData.checkInTime) {
+        attendanceData.checkInTime = new Date();
+      }
+  
+    } else {
+
     }
 
-
-    const userExist = await User.find({ id: attendanceData.userId});
-
-    if(!userExist) {
-      return response.status(404).json({ error: "User not found" });
-    }
-
-
-
-    const eventLat = event.location.coordinates.lat;
-    const eventLng = event.location.coordinates.lng;
-    const userLat = attendanceData.location.lat;
-    const userLng = attendanceData.location.long;
-
-    console.log('userLat :>> ', userLat);
-    console.log('userLng :>> ', userLng);
-    const distanceInKm = calculateDistance(eventLat, eventLng, userLat, userLng);
-    const distanceInMeters = distanceInKm * 1000; 
-    const maxAllowedDistance = 50;
-
-    console.log(distanceInMeters);
-    
-
-    if (distanceInMeters > maxAllowedDistance) {
-      return response.status(400).json({
-        error: `You are too far from the event location. Distance: ${distanceInMeters.toFixed(
-          2
-        )} meters`,
-      });
-    }
-
-    
-    if (!attendanceData.checkInTime) {
-      attendanceData.checkInTime = new Date();
-    }
-
+   
     const newAttendance = await AttendanceModel.create(attendanceData);
 
     return response.status(201).json(newAttendance);

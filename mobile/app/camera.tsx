@@ -5,8 +5,8 @@ import {
   CameraType,
   useCameraPermissions,
 } from 'expo-camera';
-import * as Location from 'expo-location'; 
-import * as Device from 'expo-device'; 
+import * as Location from 'expo-location';
+import * as Device from 'expo-device';
 import { router } from 'expo-router';
 import { useSelector } from 'react-redux';
 import { RootState } from '../types';
@@ -26,12 +26,13 @@ const ScannerScreen: React.FC<any> = () => {
     (state: RootState) => state.attendance.eventId
   )
 
-  console.log('Tipo de presença solicitada:', typeAttendance); 
-  console.log('id do evento:', eventId); 
+  console.log('Tipo de presença solicitada:', typeAttendance);
+  console.log('id do evento:', eventId);
 
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraViewType | null>(null);
+  const [isCameraActive, setIsCameraActive] = useState(true);
 
   if (!permission) return <View />;
   if (!permission.granted) {
@@ -59,6 +60,8 @@ const ScannerScreen: React.FC<any> = () => {
         // Captura a foto
         const photo = await cameraRef.current.takePictureAsync();
         console.log('Foto Tirada', `Foto salva em: ${photo.uri}`);
+
+        setIsCameraActive(false);
 
         // Solicita permissão para acessar a localização
         const { status } = await Location.requestForegroundPermissionsAsync();
@@ -109,7 +112,7 @@ const ScannerScreen: React.FC<any> = () => {
         router.push("/events");
       } catch (error: any) {
 
-        if(error.status == 400) {
+        if (error.status == 400) {
           console.log('Erro ao registrar presença: Fora de alcance',);
           router.push("/events");
         }
@@ -122,7 +125,6 @@ const ScannerScreen: React.FC<any> = () => {
 
   return (
     <View style={styles.container}>
-      {/* Renderização condicional com base no tipo de presença */}
       {typeAttendance === 'qr' && (
         <CameraView
           style={styles.camera}
@@ -139,7 +141,7 @@ const ScannerScreen: React.FC<any> = () => {
         </CameraView>
       )}
 
-      {typeAttendance === 'manual' && (
+      {typeAttendance === 'manual' && isCameraActive && (
         <CameraView
           ref={cameraRef as any}
           style={styles.camera}

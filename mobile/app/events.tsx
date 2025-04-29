@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
-import {fetchAllEvents}  from '../services/event.service';
+import { fetchAllEvents } from '../services/event.service';
 import { router } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { setNativeProps } from 'react-native-reanimated';
 import { selectAttendance, setAttendanceType, setEventId } from '../slices/attendanceSlice';
 import { findAttendancesByUserId } from '../services/attendance.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import QRCode from 'react-native-qrcode-svg';
 
 
 // import { API_URL } from '@env';
@@ -49,19 +50,19 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
   const [userRole, setuserRole] = useState<any>(null)
   const [attendancesFromLoggedUser, setAttendancesFromLoggedUser] = useState<any>([])
 
- 
+
 
   useEffect(() => {
 
     const fetchUserId = async () => {
       const response = await AsyncStorage.getItem('id')
-      
+
       setUserId(response)
     }
 
     const fetchUserRole = async () => {
       const response: any = await AsyncStorage.getItem('perfil');
-        
+
       setuserRole(response)
     }
 
@@ -88,18 +89,18 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
     const fetchAttendancesByUser = async (userId: string) => {
       try {
         const response: any = await findAttendancesByUserId(userId);
-      
-          setAttendancesFromLoggedUser(response.data)
-        
+
+        setAttendancesFromLoggedUser(response.data)
+
       } catch (error) {
         throw error;
       }
     }
 
-    if(userId) {
+    if (userId) {
       fetchAttendancesByUser(userId)
     }
-       
+
   }, [userId])
 
 
@@ -107,8 +108,8 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
 
 
 
-    
-      
+
+
   }, [userRole])
 
 
@@ -117,16 +118,16 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
   };
 
   const toogleCancelMarkEvent = () => {
-      setMarkedEvent(null)
+    setMarkedEvent(null)
 
   }
 
   const setAttendanceMode = (attendanceType: string, eventId: string) => {
-      dispatch(setAttendanceType(''))
-      dispatch(setEventId('')) 
-      dispatch(setAttendanceType(attendanceType))
-      dispatch(setEventId(eventId)) 
-      router.push('/camera')
+    dispatch(setAttendanceType(''))
+    dispatch(setEventId(''))
+    dispatch(setAttendanceType(attendanceType))
+    dispatch(setEventId(eventId))
+    router.push('/camera')
   }
 
   return (
@@ -141,14 +142,22 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
             <Text style={styles.eventTitle}>{item.title}</Text>
 
             <Text style={styles.eventDescription}>{item.description}</Text>
+            {(userRole === "professor" || userRole === 'admin') && (
+              <QRCode
+                value={item.qrCodeData}
+                size={150}
+                color="black"
+                backgroundColor="white"
+              />
+            )}
 
-            {!attendancesFromLoggedUser.some((e: any) => e.eventId === item._id ) && (
+            {!attendancesFromLoggedUser.some((e: any) => e.eventId === item._id) && (
               <TouchableOpacity style={styles.markButton} onPress={() => toggleMarkEvent(item._id)}>
                 <Text style={styles.markButtonText}> Marcar Presença</Text>
               </TouchableOpacity>
             )}
 
-            {attendancesFromLoggedUser.some((e: any) => e.eventId === item._id ) && (
+            {attendancesFromLoggedUser.some((e: any) => e.eventId === item._id) && (
               <TouchableOpacity style={styles.markButton} disabled>
                 <Text style={styles.markButtonText}> Presença registrada</Text>
               </TouchableOpacity>
@@ -156,16 +165,16 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
 
             {(markedEvent === item._id) && (
               <>
-              <Text style={styles.titleMarked}>Informe como vocẽ quer marcar sua presença</Text>
-              <TouchableOpacity style={styles.markButton} onPress={() => setAttendanceMode('qr', item._id)}>
-                <Text style={styles.markButtonText}> QR code</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.markButton} onPress={() => setAttendanceMode('manual', item._id)}>
-                <Text style={styles.markButtonText}> Foto com localização </Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.markedButton} onPress={() => toogleCancelMarkEvent()}>
-                <Text style={styles.markButtonText}> Cancelar Marcação </Text>
-              </TouchableOpacity>
+                <Text style={styles.titleMarked}>Informe como vocẽ quer marcar sua presença</Text>
+                <TouchableOpacity style={styles.markButton} onPress={() => setAttendanceMode('qr', item._id)}>
+                  <Text style={styles.markButtonText}> QR code</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.markButton} onPress={() => setAttendanceMode('manual', item._id)}>
+                  <Text style={styles.markButtonText}> Foto com localização </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.markedButton} onPress={() => toogleCancelMarkEvent()}>
+                  <Text style={styles.markButtonText}> Cancelar Marcação </Text>
+                </TouchableOpacity>
               </>
             )}
 
@@ -173,10 +182,15 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
         )}
       />
 
-      {(userRole === "professor" || userRole === 'admin' ) && (
-            <TouchableOpacity style={styles.registerEvent} onPress={() => router.push('/eventsRegistry')}>
-              <Text style={styles.registerEventText} >Registar novo evento</Text>
-            </TouchableOpacity>
+      {(userRole === "professor" || userRole === 'admin') && (
+        <View style={styles.btnContainer}>
+          <TouchableOpacity style={styles.btn} onPress={() => router.push('/dashboard')}>
+            <Text style={styles.btn_text}> Voltar para a tela de módulos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.btn} onPress={() => router.push("/eventsRegistry")}>
+            <Text style={styles.btn_text}>Registrar Evento</Text>
+          </TouchableOpacity>
+        </View>
       )}
 
     </View>
@@ -191,6 +205,23 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#f5f5f5',
+  },
+  btn_text: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  btnContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 20
+  },
+  btn: {
+    backgroundColor: '#69b932',
+    padding: 14,
+    borderRadius: 6,
+    alignItems: 'center',
+    marginTop: 10,
   },
   title: {
     fontSize: 26,
@@ -209,7 +240,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'right',
     paddingRight: 10
-    },
+  },
   titleMarked: {
     marginTop: 20,
     textAlign: 'center',
@@ -247,7 +278,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 4,
-    textAlign:'center',
+    textAlign: 'center',
     justifyContent: 'flex-end',
     alignItems: 'center'
   },

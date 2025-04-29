@@ -10,6 +10,7 @@ export interface EventDTO {
       lng: number;
     };
   };
+  attendees: string[];
   maxParticipants: number;
   createdBy: string; 
   type: "class" | "lecture" | "workshop" | "other"; 

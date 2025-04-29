@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { EventDTO } from "../dtos/EventDTO";
+import { v4 as uuidv4 } from 'uuid';
 
 const eventSchema: Schema = new mongoose.Schema(
   {
@@ -57,7 +58,7 @@ const eventSchema: Schema = new mongoose.Schema(
     },
     qrCodeData: {
       type: String,
-      default: null, 
+      default: () => uuidv4()
     },
     attendees: [
       {
