@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
-import fetchAllEvents from '../services/event.service';
+import {fetchAllEvents}  from '../services/event.service';
 import { router } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { setNativeProps } from 'react-native-reanimated';
@@ -46,6 +46,7 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
   const dispatch = useDispatch();
   useSelector(selectAttendance);
   const [userId, setUserId] = useState<any>(null)
+  const [userRole, setuserRole] = useState<any>(null)
   const [attendancesFromLoggedUser, setAttendancesFromLoggedUser] = useState<any>([])
 
  
@@ -56,6 +57,12 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
       const response = await AsyncStorage.getItem('id')
       
       setUserId(response)
+    }
+
+    const fetchUserRole = async () => {
+      const response: any = await AsyncStorage.getItem('perfil');
+        
+      setuserRole(response)
     }
 
     const fetchEvents = async () => {
@@ -71,6 +78,7 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
     }
 
     fetchUserId()
+    fetchUserRole()
     fetchEvents()
 
   }, []);
@@ -93,6 +101,16 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
     }
        
   }, [userId])
+
+
+  useEffect(() => {
+
+
+
+    
+      
+  }, [userRole])
+
 
   const toggleMarkEvent = (eventId: string) => {
     setMarkedEvent(eventId)
@@ -132,7 +150,7 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
 
             {attendancesFromLoggedUser.some((e: any) => e.eventId === item._id ) && (
               <TouchableOpacity style={styles.markButton} disabled>
-                <Text style={styles.markButtonText}> Presença registrada </Text>
+                <Text style={styles.markButtonText}> Presença registrada</Text>
               </TouchableOpacity>
             )}
 
@@ -154,6 +172,13 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
           </View>
         )}
       />
+
+      {(userRole === "professor" || userRole === 'admin' ) && (
+            <TouchableOpacity style={styles.registerEvent} onPress={() => router.push('/eventsRegistry')}>
+              <Text style={styles.registerEventText} >Registar novo evento</Text>
+            </TouchableOpacity>
+      )}
+
     </View>
   );
 };
@@ -179,6 +204,12 @@ const styles = StyleSheet.create({
     marginBlock: 12,
     fontSize: 16
   },
+  vacancyDescription: {
+    marginBlock: 12,
+    fontSize: 16,
+    textAlign: 'right',
+    paddingRight: 10
+    },
   titleMarked: {
     marginTop: 20,
     textAlign: 'center',
@@ -208,6 +239,22 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  registerEvent: {
+    width: 200,
+    marginTop: 12,
+    backgroundColor: '#69b932',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+    textAlign:'center',
+    justifyContent: 'flex-end',
+    alignItems: 'center'
+  },
+  registerEventText: {
+    textAlign: 'center',
+    color: '#FFF',
+    fontWeight: 'bold'
   },
   markedButton: {
     marginTop: 12,

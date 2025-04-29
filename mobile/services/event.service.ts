@@ -12,5 +12,15 @@ const fetchAllEvents = (): Promise<any> =>  {
  
 }
 
+const createNewEvent = (event: any): Promise<any> => {
+  try {
+    const response = url.post('/api/events/createNew', event)
 
-export default fetchAllEvents;
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+export { fetchAllEvents, createNewEvent };

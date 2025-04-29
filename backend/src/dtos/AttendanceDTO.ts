@@ -5,7 +5,7 @@ export interface AttendanceDTO {
   checkInTime: Date;
   location: {
     lat: number; 
-    lng: number; 
+    long: number; 
   };
   deviceInfo: {
     brand: string; 

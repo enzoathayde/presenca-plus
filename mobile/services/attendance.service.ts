@@ -18,8 +18,7 @@ const findAttendancesByUserId = (userId: any): Promise<any> => {
 
     const params: any = new URLSearchParams();
     params.append('id', userId)
-    console.log(params);
-    
+
     const response = url.get('/api/attendance/findByUserId', {params})
 
     return response
