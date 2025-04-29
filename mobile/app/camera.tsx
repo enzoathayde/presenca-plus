@@ -50,7 +50,7 @@ const ScannerScreen: React.FC<any> = () => {
   // Função para ler QR Code
   const handleBarcodeScanned = ({ data }: { data: string }) => {
     Alert.alert('QR Code Lido', `Conteúdo: ${data}`);
-    router.back(); // Volta para a tela anterior
+    router.push("/events"); // Volta para a tela anterior
   };
 
   const takePicture = async () => {
