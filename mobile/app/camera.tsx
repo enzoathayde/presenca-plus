@@ -50,7 +50,7 @@ const ScannerScreen: React.FC<any> = () => {
   // Função para ler QR Code
   const handleBarcodeScanned = ({ data }: { data: string }) => {
     Alert.alert('QR Code Lido', `Conteúdo: ${data}`);
-    router.push("/events"); // Volta para a tela anterior
+    router.push("/events");
   };
 
   const takePicture = async () => {
@@ -64,7 +64,7 @@ const ScannerScreen: React.FC<any> = () => {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
           Alert.alert('Permissão negada', 'A localização não pode ser acessada.');
-          return;
+          router.push("/events");
         }
 
         // Obtém a localização atual
@@ -106,14 +106,16 @@ const ScannerScreen: React.FC<any> = () => {
 
         // Feedback de sucesso
         Alert.alert('Sucesso', 'Presença registrada com sucesso!');
-        router.back();
+        router.push("/events");
       } catch (error: any) {
 
         if(error.status == 400) {
           console.log('Erro ao registrar presença: Fora de alcance',);
+          router.push("/events");
         }
         console.error('Erro ao registrar presença:', error.message);
         Alert.alert('Erro', error.message || 'Não foi possível completar a operação.');
+        router.push("/events");
       }
     }
   }
