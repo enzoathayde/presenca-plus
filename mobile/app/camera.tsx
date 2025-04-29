@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import {
   CameraView,
@@ -13,7 +13,9 @@ import { RootState } from '../types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createNewAttendance } from '../services/attendance.service';
 
-// Forçando a tipagem manual para o CameraView
+
+
+
 type CameraViewType = {
   takePictureAsync: () => Promise<{ uri: string }>;
 };
@@ -48,16 +50,53 @@ const ScannerScreen: React.FC<any> = () => {
     );
   }
 
-  // Função para ler QR Code
-  const handleBarcodeScanned = ({ data }: { data: string }) => {
-    Alert.alert('QR Code Lido', `Conteúdo: ${data}`);
-    router.push("/events");
+  const handleBarcodeScanned = async ({ data }: { data: string }) => {
+  
+      console.log('dsadsa');
+    
+      try {
+        const userIdResponse = await AsyncStorage.getItem('id');
+    
+        const attendanceObject = {
+          eventId: eventId,
+          userId: userIdResponse,
+          checkInMethod: 'qr',
+          checkInTime: Date.now(),
+          location: {
+            lat: 0,
+            long: 0,
+          },
+          deviceInfo: {
+            brand: null,
+            modelName: null,
+            osName: 'Linux',
+            osVersion: 'x86_64',
+          },
+        };
+    
+        const response = await createNewAttendance({ ...attendanceObject, qrCode: data });
+    
+        if (response.status !== 200) {
+          console.error(response.data.error);
+          Alert.alert('Erro', response.data.error || 'Erro ao registrar presença');
+          router.push('/events');
+          return;
+        }
+    
+        Alert.alert('Sucesso', 'Presença registrada com sucesso!');
+        router.push('/events');
+      } catch (error: any) {
+        console.error('Erro ao registrar presença:', error);
+        Alert.alert('Erro', error?.message || 'Erro desconhecido. Tente novamente.');
+        router.push('/events');
+      }
+
   };
 
   const takePicture = async () => {
     if (cameraRef.current) {
       try {
-        // Captura a foto
+
         const photo = await cameraRef.current.takePictureAsync();
         console.log('Foto Tirada', `Foto salva em: ${photo.uri}`);
 
