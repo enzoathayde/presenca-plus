@@ -53,6 +53,10 @@ const LoginScreen: React.FC<any> = () => {
 
       setLoading(false);
       setMessage("Usuário/senha incorretos.")
+
+      setTimeout(() => {
+        setMessage(null)
+      },2000)
     }
   };
 
@@ -70,7 +74,7 @@ const LoginScreen: React.FC<any> = () => {
           source={require('../assets/logo.png')}
           style={styles.logo}
         />
-
+        <Text style={styles.errorMessage}>{message}</Text>
         <View style={styles.form}>
           <Text style={styles.textLogin}>Faça login ou cadastre-se</Text>
           <TextInput
@@ -89,7 +93,7 @@ const LoginScreen: React.FC<any> = () => {
             onChangeText={setPassword}
           />
           {loading ? (
-            <ActivityIndicator size="small" color="#222"  style={styles.smallPadding}/>
+            <ActivityIndicator size="small" color="#222"/>
           ) : (
             <>
               <TouchableOpacity style={styles.btn_login} onPress={handleLogin} disabled={loading}>
@@ -101,7 +105,6 @@ const LoginScreen: React.FC<any> = () => {
             </>
           )}
         </View>
-        <Text style={styles.errorMessage}>{message}</Text>
       </View>
     </ImageBackground>
   );
@@ -126,10 +129,10 @@ const styles = StyleSheet.create({
   logo: {
     width: 160,
     height: 160,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   form: {
-    width: '85%',
+    width: '95%',
     marginTop: 30,
     alignItems: 'center',
   },
@@ -142,16 +145,16 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: '#f4f4f4',
-    padding: 12,
+    padding: 10,
     marginBottom: 15,
     borderRadius: 6,
     borderWidth: 1.5,
     borderColor: '#006653',
-    width: '80%',
+    width: '95%',
     fontSize: 16,
   },
   btn_login: {
-    width: '80%',
+    width: '95%',
     padding: 12,
     marginTop: 15,
     borderRadius: 6,
@@ -159,7 +162,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   btn_register: {
-    width: '80%',
+    width: '95%',
     padding: 12,
     marginTop: 15,
     borderRadius: 6,
@@ -179,13 +182,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   errorMessage: {
-    paddingTop: 30,
-    fontSize: 14,
+    paddingTop: 3,
+    fontSize: 15.5,
     color: '#FC0505',
     textAlign: 'center',
-  },
-  smallPadding: {
-    paddingTop: 10,
   },
 });
 

@@ -112,7 +112,12 @@ const createAttendanceController = async (
       if (!event) {
         return response.status(404).json({ error: "Event not found" });
       } else {
+        let eventId = event._id.toString()
         let attendees = event.attendees;
+ 
+        if(eventId !== attendanceData.eventId) {
+          return response.status(404).json({ error: 'QRcode doesnt match with event'})
+        }
 
         const alreadyRegistered = attendees.some(
           (attendee: any) =>

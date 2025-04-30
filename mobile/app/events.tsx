@@ -142,14 +142,6 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
             <Text style={styles.eventTitle}>{item.title}</Text>
 
             <Text style={styles.eventDescription}>{item.description}</Text>
-            {(userRole === "professor" || userRole === 'admin') && (
-              <QRCode
-                value={item.qrCodeData}
-                size={150}
-                color="black"
-                backgroundColor="white"
-              />
-            )}
 
             {!attendancesFromLoggedUser.some((e: any) => e.eventId === item._id) && (
               <TouchableOpacity style={styles.markButton} onPress={() => toggleMarkEvent(item._id)}>
@@ -165,7 +157,7 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
 
             {(markedEvent === item._id) && (
               <>
-                <Text style={styles.titleMarked}>Informe como vocẽ quer marcar sua presença</Text>
+                <Text style={styles.titleMarked}>Informe como você quer marcar sua presença:</Text>
                 <TouchableOpacity style={styles.markButton} onPress={() => setAttendanceMode('qr', item._id)}>
                   <Text style={styles.markButtonText}> QR code</Text>
                 </TouchableOpacity>
@@ -213,8 +205,7 @@ const styles = StyleSheet.create({
   },
   btnContainer: {
     display: 'flex',
-    flexDirection: 'row',
-    gap: 20
+    flexDirection: 'column',
   },
   btn: {
     backgroundColor: '#69b932',
@@ -242,8 +233,8 @@ const styles = StyleSheet.create({
     paddingRight: 10
   },
   titleMarked: {
-    marginTop: 20,
-    textAlign: 'center',
+    marginTop: 50,
+    textAlign: 'left',
     fontWeight: 'bold',
   },
   eventContainer: {

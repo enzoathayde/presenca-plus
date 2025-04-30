@@ -15,6 +15,7 @@ const RegisterScreen: React.FC<any> = ({ navigation }) => {
   const [registration, setRegistration] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [messageSuccessfull, setMessageSuccessfull] = useState<string | null>(null);
 
   const handleSignUp = async () => {
     setLoading(true);
@@ -23,19 +24,24 @@ const RegisterScreen: React.FC<any> = ({ navigation }) => {
     if (!name || !email || !password || !course) {
       setMessage('Todos os campos obrigatórios devem ser preenchidos.');
       setLoading(false);
+
+      setTimeout(() => {
+        setMessage(null);
+      }, 2000)
+
       return;
     }
 
     try {
       const response = await userRegistration({ name, email, password, course, registration, role: 'aluno' });
-
-      console.log(response);
       
       if(response.status === 201) {
         signUp(email,password)
-        setLoading(false);
+        setMessageSuccessfull('Cadastro efetuado. Redirecionando...')
         setTimeout(() => {
-          router.push("/dashboard")
+          setMessageSuccessfull(null)
+          setLoading(false);
+          router.push("/login")
         }, 2000);
         
       }
@@ -43,6 +49,10 @@ const RegisterScreen: React.FC<any> = ({ navigation }) => {
     } catch (error: any) {
       if(error.status === 409) {
         setMessage("Já existe um usuário cadastrado com este email.")
+
+        setTimeout(() => {
+          setMessage(null);
+        }, 2000)  
       }
       setLoading(false);
     }
@@ -53,6 +63,8 @@ const RegisterScreen: React.FC<any> = ({ navigation }) => {
 
       <View style={styles.container}>
         <Text style={styles.title}>Cadastre-se</Text>
+
+        {messageSuccessfull && <Text style={styles.messageSuccessfull}>{messageSuccessfull}</Text>}
 
         <View style={styles.form}>
           <TextInput
@@ -89,7 +101,6 @@ const RegisterScreen: React.FC<any> = ({ navigation }) => {
             onChangeText={setRegistration}
           />
 
-          {/* Exibe mensagem de feedback */}
           {message && <Text style={styles.message}>{message}</Text>}
 
           {loading ? (
@@ -130,25 +141,25 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#02250c',
-    marginBottom: 20,
+    marginBottom: 30,
     textAlign: 'center',
   },
   form: {
-    width: '100%',
+    width: '95%',
     alignItems: 'center',
   },
   input: {
     backgroundColor: '#f4f4f4',
-    padding: 12,
+    padding: 10,
     marginBottom: 15,
     borderRadius: 6,
     borderWidth: 1.5,
     borderColor: '#006653',
-    width: '80%',
+    width: '95%',
     fontSize: 16,
   },
   btn: {
-    width: '80%',
+    width: '95%',
     padding: 12,
     marginTop: 15,
     borderRadius: 6,
@@ -164,6 +175,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'center',
     color: '#FC0505',
+    fontSize: 14,
+  },
+  messageSuccessfull: {
+    marginTop: 10,
+    marginBottom: 10,
+    textAlign: 'center',
+    color: '#000',
     fontSize: 14,
   },
   smallPadding: {

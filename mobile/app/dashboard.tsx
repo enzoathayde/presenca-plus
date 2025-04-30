@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -14,12 +14,9 @@ type DashboardStackParamList = {
 
 
 
-const DashboardScreen: React.FC<any> = ({ navigation }) => {
+const DashboardScreen: React.FC<any> = () => {
 
-  const userName = AsyncStorage.getItem('nome').then(res =>{return res})
-
-  const userNameAsString = userName;
-  const userId = AsyncStorage.getItem('id')
+  const [user, setUser] = useState<any>('')
 
   const handleNavigateCamera = () => {
     router.push("/camera")
@@ -32,21 +29,29 @@ const DashboardScreen: React.FC<any> = ({ navigation }) => {
     router.push("/events")
   }
 
+  useEffect(() => {
+
+    const fetchUserName = async () =>{
+      const userName: any = await AsyncStorage.getItem('nome')
+
+      setUser(userName)
+    }
+
+    fetchUserName()
+
+  }, [])
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header} />
       <View style={styles.content}>
-        <Text style={styles.welcomeText}>
-          {/* Bem vindo, <Text style={{ fontWeight: 'bold' }}>{userNameAsString}</Text> */}
-        </Text>
+
+        {user && ( <Text style={styles.welcomeText}>
+          Bem vindo, <Text style={{ fontWeight: 'bold' }}>{user}</Text>
+        </Text>)}
 
         <View style={styles.grid}>
-          <TouchableOpacity style={styles.card} onPress={handleNavigateCamera}>
-            <FontAwesome5 name="camera" size={40} color="white" />
-            <Text style={styles.cardText}>Camera</Text>
-          </TouchableOpacity>
-
           <TouchableOpacity style={styles.card} onPress={handleNavigateEvents}>
             <FontAwesome5 name="calendar-plus" size={40} color="white" />
             <Text style={styles.cardText}>Eventos</Text>
@@ -85,7 +90,7 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     fontSize: 16,
-    marginBottom: 20,
+    marginBottom: 40,
     alignSelf: 'flex-start',
   },
   grid: {
