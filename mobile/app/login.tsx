@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, TextInput, Image, TouchableOpacity, ActivityIndicator, ImageBackground } from 'react-native';
 import { useState } from 'react';
 import { signIn } from '../services/auth.service'
@@ -16,6 +16,22 @@ const LoginScreen: React.FC<any> = () => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+
+  const verifiyUserLogged = async () =>{
+
+    const hasUserLogged =  await AsyncStorage.getItem('nome')
+
+    if(hasUserLogged) {
+      router.push('/dashboard')
+    }
+  }
+
+
+  useEffect(() =>{
+    verifiyUserLogged()
+  },[])
+  
 
   const handleLogin = async () => {
     setLoading(true)
@@ -63,7 +79,6 @@ const LoginScreen: React.FC<any> = () => {
   const handleSignUp = async () => {
     router.push("/register")
   };
-
 
   return (
     <ImageBackground source={require('../assets/background.png')} style={styles.background}>

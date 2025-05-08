@@ -54,6 +54,10 @@ export default function RegisterEventQuickForm() {
   const handleRegister = async () => {
     if (!title || !description || !locationName || !maxParticipants || !type || !category) {
       setError('Por favor, preencha todos os campos obrigatórios.');
+
+      setTimeout(() => {
+        setError('')
+      }, 2000)
       return;
     }
 
@@ -76,8 +80,6 @@ export default function RegisterEventQuickForm() {
       };
 
       console.log(eventPayload);
-      
-
       const res = await createNewEvent(eventPayload);
       console.log('Evento criado:', res);
       Alert.alert('Sucesso', 'Evento registrado com sucesso!');
@@ -93,60 +95,68 @@ export default function RegisterEventQuickForm() {
       <Text style={styles.title}>Registrar Evento</Text>
       {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      {step === 1 && (
-        <>
-          <TextInput style={styles.input} placeholder="Título" value={title} onChangeText={setTitle} />
-          <TextInput style={styles.input} placeholder="Descrição" value={description} onChangeText={setDescription} multiline />
-          <TextInput style={styles.input} placeholder="Tipo (ex: workshop)" value={type} onChangeText={setType} />
-          <TextInput style={styles.input} placeholder="Categoria (ex: tecnologia)" value={category} onChangeText={setCategory} />
-        </>
-      )}
+      <View style={styles.formContainer}>
+        {step === 1 && (
+          <>
+            <TextInput style={styles.input} placeholder="Título" value={title} onChangeText={setTitle} />
+            <TextInput style={styles.input} placeholder="Descrição" value={description} onChangeText={setDescription} multiline />
+            <TextInput style={styles.input} placeholder="Tipo (ex: workshop)" value={type} onChangeText={setType} />
+            <TextInput style={styles.input} placeholder="Categoria (ex: tecnologia)" value={category} onChangeText={setCategory} />
+          </>
+        )}
 
-      {step === 2 && (
-        <>
-          <MaskInput
-            style={styles.input}
-            placeholder="Data início (DD/MM/YYYY)"
-            value={startDate}
-            onChangeText={setStartDate}
-            mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
-            keyboardType="number-pad"
-          />
-          <MaskInput
-            style={styles.input}
-            placeholder="Hora início (HH:mm)"
-            value={startTime}
-            onChangeText={setStartTime}
-            mask={[/\d/, /\d/, ':', /\d/, /\d/]}
-            keyboardType="number-pad"
-          />
-          <MaskInput
-            style={styles.input}
-            placeholder="Data fim (DD/MM/YYYY)"
-            value={endDate}
-            onChangeText={setEndDate}
-            mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
-            keyboardType="number-pad"
-          />
-          <MaskInput
-            style={styles.input}
-            placeholder="Hora fim (HH:mm)"
-            value={endTime}
-            onChangeText={setEndTime}
-            mask={[/\d/, /\d/, ':', /\d/, /\d/]}
-            keyboardType="number-pad"
-          />
-        </>
-      )}
+        {step === 2 && (
+          <>
+            <MaskInput
+              style={styles.input}
+              placeholder="Data início (DD/MM/YYYY)"
+              value={startDate}
+              onChangeText={setStartDate}
+              mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
+              keyboardType="number-pad"
+            />
+            <MaskInput
+              style={styles.input}
+              placeholder="Hora início (HH:mm)"
+              value={startTime}
+              onChangeText={setStartTime}
+              mask={[/\d/, /\d/, ':', /\d/, /\d/]}
+              keyboardType="number-pad"
+            />
+            <MaskInput
+              style={styles.input}
+              placeholder="Data fim (DD/MM/YYYY)"
+              value={endDate}
+              onChangeText={setEndDate}
+              mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
+              keyboardType="number-pad"
+            />
+            <MaskInput
+              style={styles.input}
+              placeholder="Hora fim (HH:mm)"
+              value={endTime}
+              onChangeText={setEndTime}
+              mask={[/\d/, /\d/, ':', /\d/, /\d/]}
+              keyboardType="number-pad"
+            />
+          </>
+        )}
 
-      {step === 3 && (
-        <>
-          <TextInput style={styles.input} placeholder="Nome do local" value={locationName} onChangeText={setLocationName} />
-          <TextInput style={styles.input} placeholder="Máximo de participantes" keyboardType="numeric" value={maxParticipants} onChangeText={setMaxParticipants} />
-        </>
-      )}
+        {step === 3 && (
+          <>
+            <TextInput style={styles.input} placeholder="Nome do local" value={locationName} onChangeText={setLocationName} />
+            <TextInput style={styles.input} placeholder="Máximo de participantes" keyboardType="numeric" value={maxParticipants} onChangeText={setMaxParticipants} />
+          </>
+        )}
+      </View>
 
       <View style={styles.btnGroup}>
+        {step === 1 && (
+          <TouchableOpacity style={styles.btnSecondaryDisabled} onPress={() => setStep(step - 1)} disabled>
+            <Text style={styles.font_text}>Voltar</Text>
+          </TouchableOpacity>
+        )}
+
         {step > 1 && (
           <TouchableOpacity style={styles.btnSecondary} onPress={() => setStep(step - 1)}>
             <Text style={styles.font_text}>Voltar</Text>
@@ -165,29 +175,32 @@ export default function RegisterEventQuickForm() {
           </TouchableOpacity>
         )}
       </View>
-
-        
-      <View style={styles.btnGroup}>
-      <TouchableOpacity  style={styles.btn} onPress={() => router.push('/events')}>
-            <Text style={styles.font_text}>Voltar para Eventos</Text>
+      
+      <TouchableOpacity style={styles.btnBackToEvents} onPress={() => router.push('/events')}>
+        <Text style={styles.font_text}>Voltar para Eventos</Text>
       </TouchableOpacity>
-      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
-    backgroundColor: '#fff',
-    display: 'flex',
-    alignContent: 'center',
-    justifyContent: 'center'
+    flex: 1,
+    backgroundColor: '#FFF',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,  
   },
   title: {
-    fontSize: 22,
-    marginBottom: 20,
+    fontSize: 26,
     fontWeight: 'bold',
+    color: '#333',
+    marginTop: 80,
+    textAlign: 'center',
+  },
+  formContainer: {
+    flex: 1,  
+    justifyContent: 'center',  
+    width: '100%',
   },
   input: {
     backgroundColor: '#f4f4f4',
@@ -196,37 +209,53 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 1.5,
     borderColor: '#006653',
+    width: '100%',
     fontSize: 16,
   },
   btnGroup: {
-    marginTop: 20,
-    marginBottom: 40,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 10, 
   },
   btn: {
     backgroundColor: '#69b932',
-    padding: 12,
+    padding: 14,
     borderRadius: 6,
     alignItems: 'center',
-    flex: 1,
-    marginLeft: 5,
+    width: '49%',
   },
   btnSecondary: {
-    backgroundColor: '#cccccc',
-    padding: 12,
+    backgroundColor: '#69b932',
+    padding: 14,
     borderRadius: 6,
     alignItems: 'center',
-    flex: 1,
-    marginRight: 5,
+    width: '49%',
+  },
+  btnSecondaryDisabled: {
+    backgroundColor: '#69b932',
+    padding: 14,
+    borderRadius: 6,
+    alignItems: 'center',
+    opacity: 0.6,
+    width: '49%',
   },
   font_text: {
+    color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
-    color: '#fff',
+  },
+  btnBackToEvents: {
+    backgroundColor: '#69b932',
+    padding: 14,
+    borderRadius: 6,
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 20,  
   },
   error: {
+    marginTop: 30,
     color: 'red',
-    marginBottom: 10,
+    textAlign: 'center',
   },
 });
