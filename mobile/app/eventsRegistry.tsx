@@ -9,7 +9,7 @@ import { router } from 'expo-router';
 import MaskInput from 'react-native-mask-input';
 
 export default function RegisterEventQuickForm() {
-  const [step, setStep] = useState(1); // 👈 Etapas do formulário
+  const [step, setStep] = useState(1); 
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -41,8 +41,16 @@ export default function RegisterEventQuickForm() {
     };
 
     const fetchLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+
       const location = await Location.getCurrentPositionAsync({});
+      console.log('ds');
+      
+      console.log(location);
+      
       const { latitude, longitude } = location.coords;
+      console.log(latitude, longitude);
+      
       setLat(latitude);
       setLng(longitude);
     };

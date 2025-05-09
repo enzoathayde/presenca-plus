@@ -72,8 +72,8 @@ const DashboardScreen: React.FC<any> = () => {
             <Text style={styles.cardText}>Código QR</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity  onPress={() => handleLogout() }>
-          <Text>Logout</Text>
+        <TouchableOpacity style={styles.logoutBtn} onPress={() => handleLogout() }>
+          <Text style={styles.logoutBtnText}>Logout</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     backgroundColor: '#FFFFFF',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   header: {
@@ -93,11 +94,13 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   content: {
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
     backgroundColor: "#f4f4f4",
     width: '100%',
     height: '90%',
     borderRadius: 8,
-    marginTop: -20,
     padding: 20,
     alignItems: 'center',
   },
@@ -130,6 +133,19 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 14,
   },
+  logoutBtn: {
+    backgroundColor: '#69b932',
+    padding: 14,
+    borderRadius: 6,
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 20,  
+  },
+  logoutBtnText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  }
 });
 
 export default DashboardScreen;
