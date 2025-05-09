@@ -10,19 +10,24 @@ import findUserByEmail from '../services/user.signin.service';
 
 
 
-const LoginScreen: React.FC<any> = () => {
+const LoginScreen = () => {
 
   const [emailData, setEmailData] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [hasUserLogged, setHasUserLogged] = useState<string | null>(null);
 
 
   const verifiyUserLogged = async () =>{
 
-    const hasUserLogged =  await AsyncStorage.getItem('nome')
+    const response =  await AsyncStorage.getItem('nome')
 
-    if(hasUserLogged) {
+    if(!response) {
+      setHasUserLogged(response)
+    }
+    
+    if(response) {
       router.push('/dashboard')
     }
   }
@@ -30,6 +35,8 @@ const LoginScreen: React.FC<any> = () => {
 
   useEffect(() =>{
     verifiyUserLogged()
+    console.log(hasUserLogged);
+    
   },[])
   
 
@@ -80,50 +87,51 @@ const LoginScreen: React.FC<any> = () => {
     router.push("/register")
   };
 
-  return (
+  if(!hasUserLogged) {
+    return (    
     <ImageBackground source={require('../assets/background.png')} style={styles.background}>
+    <View style={styles.container}>
 
-      <View style={styles.container}>
-
-        <Image
-          source={require('../assets/logo.png')}
-          style={styles.logo}
+      <Image
+        source={require('../assets/logo.png')}
+        style={styles.logo}
+      />
+      <Text style={styles.errorMessage}>{message}</Text>
+      <View style={styles.form}>
+        <Text style={styles.textLogin}>Faça login ou cadastre-se</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="E-mail"
+          autoCapitalize="none"
+          keyboardType="email-address"
+          value={emailData}
+          onChangeText={setEmailData}
         />
-        <Text style={styles.errorMessage}>{message}</Text>
-        <View style={styles.form}>
-          <Text style={styles.textLogin}>Faça login ou cadastre-se</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="E-mail"
-            autoCapitalize="none"
-            keyboardType="email-address"
-            value={emailData}
-            onChangeText={setEmailData}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Senha"
-            secureTextEntry
-            value={password}
-            onChangeText={setPassword}
-          />
-          {loading ? (
-            <ActivityIndicator size="small" color="#222"/>
-          ) : (
-            <>
-              <TouchableOpacity style={styles.btn_login} onPress={handleLogin} disabled={loading}>
-                <Text style={styles.btn_text}>Login</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.btn_register} onPress={handleSignUp} disabled={loading}>
-                <Text style={styles.btn_text_register}>Cadastre-se</Text>
-              </TouchableOpacity>
-            </>
-          )}
-        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Senha"
+          secureTextEntry
+          value={password}
+          onChangeText={setPassword}
+        />
+        {loading ? (
+          <ActivityIndicator size="small" color="#222"/>
+        ) : (
+          <>
+            <TouchableOpacity style={styles.btn_login} onPress={handleLogin} disabled={loading}>
+              <Text style={styles.btn_text}>Login</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.btn_register} onPress={handleSignUp} disabled={loading}>
+              <Text style={styles.btn_text_register}>Cadastre-se</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
-    </ImageBackground>
-  );
+    </View>
+  </ImageBackground>)
+  }
 };
+
 
 const styles = StyleSheet.create({
   background: {

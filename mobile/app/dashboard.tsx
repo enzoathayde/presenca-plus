@@ -29,6 +29,15 @@ const DashboardScreen: React.FC<any> = () => {
     router.push("/events")
   }
 
+  const handleLogout = () => {
+    AsyncStorage.removeItem('id')
+    AsyncStorage.removeItem('nome')
+    AsyncStorage.removeItem('email')
+    AsyncStorage.removeItem('perfil')
+    AsyncStorage.removeItem('curso')
+    router.push('/login')
+  }
+
   useEffect(() => {
 
     const fetchUserName = async () =>{
@@ -63,8 +72,12 @@ const DashboardScreen: React.FC<any> = () => {
             <Text style={styles.cardText}>Código QR</Text>
           </TouchableOpacity>
         </View>
+        <TouchableOpacity  onPress={() => handleLogout() }>
+          <Text>Logout</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
+    
   );
 };
 
