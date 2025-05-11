@@ -1,7 +1,7 @@
 import { log } from "console";
 import { UserDTO } from "../dtos/UserDTO";
 
-import { getAllUsersService, createNewUserService, editUserService, deleteUserService, getUserByEmailService } from "../services/userServices";
+import { getAllUsersService, createNewUserService, editUserService, deleteUserService, getUserByEmailService, getUsersByRoleService } from "../services/userServices";
 
 import { Request, Response } from "express";
 
@@ -29,6 +29,23 @@ const getUserByEmailController = async(request: Request, response: Response): Pr
       
   }
 }
+
+
+const getUsersByRoleController = async (request: Request, response: Response): Promise<any> => {
+  const { role } = request.query;
+
+  if (!role || typeof role !== "string") {
+    return response.status(400).json({ error: "Role é obrigatória e deve ser uma string" });
+  }
+
+  try {
+    const users = await getUsersByRoleService(role);
+    return response.status(200).json(users);
+  } catch (error) {
+    return response.status(500).json({ error: "Erro ao buscar usuários por role" });
+  }
+};
+
 
 const createNewUserController = async (request: Request, response: Response): Promise<any> => {
   try {
@@ -94,4 +111,4 @@ const deleteUserController = async (request: Request, response: Response): Promi
 
 
 
-export { getAllUsersController, getUserByEmailController, createNewUserController, editUserController, deleteUserController };
+export { getAllUsersController, getUserByEmailController, createNewUserController, editUserController, deleteUserController, getUsersByRoleController };

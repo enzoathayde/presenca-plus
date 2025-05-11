@@ -12,6 +12,16 @@ const getAllUsersRepository = async () => {
    }
 }
 
+const getUsersByRoleRepository = async (role: string) => {
+  try {
+    const users = await User.find({ role });
+    return users;
+  } catch (error) {
+    throw new Error("Erro ao buscar usuários por role");
+  }
+};
+
+
 const getUserByEmailRepository = async (userEmail: string) => {
 
    try {
@@ -60,4 +70,4 @@ const deleteUserRepository = async (userId: string) => {
 }
 
 
-export { getAllUsersRepository, getUserByEmailRepository, createNewUserRepository, editUserRepository ,deleteUserRepository }
+export { getAllUsersRepository, getUserByEmailRepository, createNewUserRepository, editUserRepository ,deleteUserRepository, getUsersByRoleRepository }

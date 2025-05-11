@@ -1,7 +1,7 @@
 import { log } from "console";
 import { UserDTO } from "../dtos/UserDTO";
 
-import { createNewUserRepository, getUserByEmailRepository, deleteUserRepository, editUserRepository, getAllUsersRepository } from "../repository/userRepository";
+import { createNewUserRepository, getUserByEmailRepository, deleteUserRepository, editUserRepository, getAllUsersRepository, getUsersByRoleRepository } from "../repository/userRepository";
 
 const getAllUsersService = async () => {
   try {
@@ -12,6 +12,16 @@ const getAllUsersService = async () => {
     throw new Error("Users not found") 
   }  
 }
+
+const getUsersByRoleService = async (role: string) => {
+  try {
+    const users = await getUsersByRoleRepository(role);
+    return users;
+  } catch (error) {
+    throw new Error("Erro ao buscar usuários com a role especificada");
+  }
+};
+
 
 const getUserByEmailService = async (userEmail: string) => {
   try {
@@ -55,4 +65,4 @@ const deleteUserService = async (userId: string) => {
   }
 }
 
-export { getAllUsersService, getUserByEmailService, createNewUserService, editUserService, deleteUserService }
+export { getAllUsersService, getUserByEmailService, createNewUserService, editUserService, deleteUserService, getUsersByRoleService }
