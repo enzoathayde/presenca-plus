@@ -67,6 +67,9 @@ const AdminAlunosScreen: React.FC = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Administrar Alunos</Text>
+      <TouchableOpacity style={styles.buttonCriar} onPress={() => router.push("/createUser")}>
+        <Text style={styles.buttonCriarText}>+ Criar Novo Usuário</Text>
+      </TouchableOpacity>
 
       {loading ? (
         <ActivityIndicator size="large" color="#69b932" />
@@ -139,6 +142,19 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     alignSelf: "flex-start",
     color: "#333",
+  },
+  buttonCriar: {
+    backgroundColor: '#69b932',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+    marginBottom: 20,
+    alignSelf: 'flex-end',
+  },
+  buttonCriarText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 14,
   },
   card: {
     backgroundColor: "#ffffff",
