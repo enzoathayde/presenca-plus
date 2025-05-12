@@ -23,15 +23,6 @@ export const editUser = async (userId: string, updatedData: any): Promise<any> =
   }
 };
 
-export const createUser = async (userData: any): Promise<any> => {
-  try {
-    const response = await url.post("/api/users/createNew", userData); // JSON
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
 
 export const deleteUser = async (userId: string): Promise<any> => {
   try {
