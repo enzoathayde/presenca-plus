@@ -9,7 +9,7 @@ import {
   ImageBackground,
 } from 'react-native';
 import { router } from 'expo-router';
-import registerUser from '../services/user.registration.service';
+import { userRegistration } from '../services/auth.service'; // ⬅️ função atualizada
 import { User } from '../interfaces/User';
 
 const CreateUser: React.FC = () => {
@@ -44,18 +44,20 @@ const CreateUser: React.FC = () => {
     };
 
     try {
-      const response = await registerUser(newUser);
-      if (response.status === 201) {
+      const response = await userRegistration(newUser);
+
+      if (response?.status === 201) {
         setMessageSuccessfull('Usuário criado com sucesso!');
         setTimeout(() => {
           setMessageSuccessfull(null);
           setLoading(false);
           router.push('/listAlunos');
         }, 2000);
+      } else {
+        throw new Error();
       }
     } catch (error: any) {
-      console.error('Erro ao criar usuário:', error);
-      const msg = error.response?.data?.error || 'Erro ao criar usuário.';
+      const msg = error?.response?.data?.error || 'Erro ao criar usuário.';
       setMessage(msg);
       setTimeout(() => setMessage(null), 2000);
       setLoading(false);
