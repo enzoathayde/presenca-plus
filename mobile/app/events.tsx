@@ -1,17 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Alert, Dimensions, Platform } from 'react-native';
 import { fetchAllEvents } from '../services/event.service';
 import { router } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { setNativeProps } from 'react-native-reanimated';
 import { selectAttendance, setAttendanceType, setEventId } from '../slices/attendanceSlice';
 import { findAttendancesByUserId } from '../services/attendance.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import QRCode from 'react-native-qrcode-svg';
-
-
-// import { API_URL } from '@env';
-
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { MaterialIcons } from '@expo/vector-icons';
+import { SyncStatus } from '../components/SyncStatus';
+import { saveEventsOffline, getOfflineEvents, isOnline } from '../services/offline.service';
 
 interface EventLocation {
   name: string;
@@ -40,268 +38,398 @@ interface Event {
   __v: number;
 }
 
+interface Attendance {
+  _id?: string;
+  eventId: string;
+  userId: string;
+  checkInMethod: string;
+  checkInTime: number;
+  location: {
+    lat: number;
+    long: number;
+  };
+  deviceInfo: {
+    brand: string | null;
+    modelName: string | null;
+    osName: string;
+    osVersion: string;
+  };
+  qrCode?: string;
+  synced?: boolean;
+}
+
 const EventsScreen: React.FC<any> = ({ navigation }) => {
+  const insets = useSafeAreaInsets();
+  const windowWidth = Dimensions.get('window').width;
   const [events, setEvents] = useState<Event[]>([]);
-  const [markedEvent, setMarkedEvent] = useState<any>(null);
-  const [attendancesByUserLogged, setattendancesByUserLogged] = useState<any>(null)
+  const [markedEvent, setMarkedEvent] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userRole, setUserRole] = useState<string | null>(null);
+  const [attendancesFromLoggedUser, setAttendancesFromLoggedUser] = useState<Attendance[]>([]);
+  const [isConnected, setIsConnected] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
+  
   const dispatch = useDispatch();
   useSelector(selectAttendance);
-  const [userId, setUserId] = useState<any>(null)
-  const [userRole, setuserRole] = useState<any>(null)
-  const [attendancesFromLoggedUser, setAttendancesFromLoggedUser] = useState<any>([])
-
-
 
   useEffect(() => {
-
-    const fetchUserId = async () => {
-      const response = await AsyncStorage.getItem('id')
-
-      setUserId(response)
-    }
-
-    const fetchUserRole = async () => {
-      const response: any = await AsyncStorage.getItem('perfil');
-
-      setuserRole(response)
-    }
-
-    const fetchEvents = async () => {
+    const loadUserData = async () => {
       try {
-        const response: any = await fetchAllEvents();
-
-        setEvents(response.data)
-
+        const storedUserId = await AsyncStorage.getItem('id');
+        const storedUserRole = await AsyncStorage.getItem('perfil');
+        setUserId(storedUserId);
+        setUserRole(storedUserRole);
+        console.log('Dados do usuário carregados:', { storedUserId, storedUserRole });
       } catch (error) {
-        throw error;
+        console.error('Erro ao carregar dados do usuário:', error);
       }
+    };
 
-    }
-
-    fetchUserId()
-    fetchUserRole()
-    fetchEvents()
-
+    loadUserData();
   }, []);
 
   useEffect(() => {
-
-    const fetchAttendancesByUser = async (userId: string) => {
+    const loadEvents = async () => {
       try {
-        const response: any = await findAttendancesByUserId(userId);
+        setLoading(true);
+        const connected = await isOnline();
+        setIsConnected(connected);
+        console.log('Status de conexão:', connected);
 
-        setAttendancesFromLoggedUser(response.data)
-
+        if (connected) {
+          // Online - busca do servidor
+          try {
+            const response = await fetchAllEvents();
+            const eventsData = response.data || response;
+            console.log('Eventos carregados do servidor:', eventsData?.length || 0);
+            setEvents(eventsData || []);
+            // Salva offline para backup
+            await saveEventsOffline(eventsData || []);
+          } catch (apiError) {
+            console.error('Erro ao buscar eventos da API:', apiError);
+            // Fallback para dados offline se API falhar
+            const offlineEvents = await getOfflineEvents();
+            console.log('Carregando eventos offline como fallback:', offlineEvents.length);
+            setEvents(offlineEvents);
+            if (offlineEvents.length > 0) {
+              Alert.alert('Aviso', 'Carregando eventos salvos offline');
+            }
+          }
+        } else {
+          // Offline - busca do cache local
+          const offlineEvents = await getOfflineEvents();
+          console.log('Carregando eventos offline:', offlineEvents.length);
+          setEvents(offlineEvents);
+          if (offlineEvents.length === 0) {
+            Alert.alert('Offline', 'Nenhum evento salvo offline disponível');
+          }
+        }
       } catch (error) {
-        throw error;
+        console.error('Erro geral ao carregar eventos:', error);
+        Alert.alert('Erro', 'Não foi possível carregar os eventos');
+      } finally {
+        setLoading(false);
       }
-    }
+    };
 
-    if (userId) {
-      fetchAttendancesByUser(userId)
-    }
-
-  }, [userId])
-
+    loadEvents();
+  }, []);
 
   useEffect(() => {
+    const loadAttendances = async () => {
+      if (userId) {
+        try {
+          console.log('Carregando presenças para o usuário:', userId);
+          const attendances = await findAttendancesByUserId(userId);
+          const attendanceData = attendances.data || attendances || [];
+          console.log('Presenças carregadas:', attendanceData.length);
+          setAttendancesFromLoggedUser(attendanceData);
+        } catch (error) {
+          console.error('Erro ao carregar presenças:', error);
+          // Não mostrar erro para o usuário, apenas log
+        }
+      }
+    };
 
-
-
-
-
-  }, [userRole])
-
+    loadAttendances();
+  }, [userId]);
 
   const toggleMarkEvent = (eventId: string) => {
-    setMarkedEvent(eventId)
+    setMarkedEvent(eventId);
   };
 
-  const toogleCancelMarkEvent = () => {
-    setMarkedEvent(null)
+  const toggleCancelMarkEvent = () => {
+    setMarkedEvent(null);
+  };
 
-  }
+  const setAttendanceMode = (type: string, eventId: string) => {
+    dispatch(setAttendanceType(type));
+    dispatch(setEventId(eventId));
+    router.push('/camera');
+  };
 
-  const setAttendanceMode = (attendanceType: string, eventId: string) => {
-    dispatch(setAttendanceType(''))
-    dispatch(setEventId(''))
-    dispatch(setAttendanceType(attendanceType))
-    dispatch(setEventId(eventId))
-    router.push('/camera')
+  const renderEventCard = ({ item }: { item: Event }) => (
+    <View style={[styles.eventContainer, { width: windowWidth - 32 }]}>
+      <View style={styles.eventHeader}>
+        <MaterialIcons name="event" size={24} color="#69b932" />
+        <Text style={styles.eventTitle}>{item.title}</Text>
+        {!isConnected && (
+          <MaterialIcons name="cloud-off" size={16} color="#ff6b6b" />
+        )}
+      </View>
+
+      <Text style={styles.eventDescription}>{item.description}</Text>
+
+      {!attendancesFromLoggedUser.some((e) => e.eventId === item._id) ? (
+        <TouchableOpacity 
+          style={styles.markButton}
+          onPress={() => toggleMarkEvent(item._id)}
+          accessibilityLabel="Marcar presença no evento"
+          accessibilityHint="Toque para marcar sua presença neste evento"
+        >
+          <MaterialIcons name="check-circle" size={20} color="#fff" />
+          <Text style={styles.markButtonText}> Marcar Presença</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity 
+          style={[styles.markButton, styles.registeredButton]}
+          disabled
+          accessibilityLabel="Presença já registrada"
+        >
+          <MaterialIcons name="check-circle" size={20} color="#fff" />
+          <Text style={styles.markButtonText}>Presença registrada</Text>
+        </TouchableOpacity>
+      )}
+
+      {markedEvent === item._id && (
+        <View style={styles.markingOptions}>
+          <Text style={styles.titleMarked}>Informe como você quer marcar sua presença:</Text>
+          
+          <TouchableOpacity 
+            style={styles.markButton}
+            onPress={() => setAttendanceMode('qr', item._id)}
+            accessibilityLabel="Marcar presença usando QR code"
+          >
+            <MaterialIcons name="qr-code" size={20} color="#fff" />
+            <Text style={styles.markButtonText}> QR code</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.markButton}
+            onPress={() => setAttendanceMode('manual', item._id)}
+            accessibilityLabel="Marcar presença com foto e localização"
+          >
+            <MaterialIcons name="location-on" size={20} color="#fff" />
+            <Text style={styles.markButtonText}> Foto com localização</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.markedButton}
+            onPress={toggleCancelMarkEvent}
+            accessibilityLabel="Cancelar marcação de presença"
+          >
+            <MaterialIcons name="cancel" size={20} color="#fff" />
+            <Text style={styles.markButtonText}> Cancelar Marcação</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+    </View>
+  );
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centerContent, { paddingTop: insets.top }]}>
+        <MaterialIcons name="hourglass-empty" size={48} color="#69b932" />
+        <Text style={styles.loadingText}>Carregando eventos...</Text>
+      </View>
+    );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
       <Text style={styles.title}>Próximos Eventos</Text>
 
-      <FlatList
-        data={events}
-        keyExtractor={(item) => item._id}
-        renderItem={({ item }) => (
-          <View style={styles.eventContainer}>
-            <Text style={styles.eventTitle}>{item.title}</Text>
+      {/* Componente de status de sincronização */}
+      <SyncStatus />
 
-            <Text style={styles.eventDescription}>{item.description}</Text>
-
-            {!attendancesFromLoggedUser.some((e: any) => e.eventId === item._id) && (
-              <TouchableOpacity style={styles.markButton} onPress={() => toggleMarkEvent(item._id)}>
-                <Text style={styles.markButtonText}> Marcar Presença</Text>
-              </TouchableOpacity>
-            )}
-
-            {attendancesFromLoggedUser.some((e: any) => e.eventId === item._id) && (
-              <TouchableOpacity style={styles.markButton} disabled>
-                <Text style={styles.markButtonText}> Presença registrada</Text>
-              </TouchableOpacity>
-            )}
-
-            {(markedEvent === item._id) && (
-              <>
-                <Text style={styles.titleMarked}>Informe como você quer marcar sua presença:</Text>
-                <TouchableOpacity style={styles.markButton} onPress={() => setAttendanceMode('qr', item._id)}>
-                  <Text style={styles.markButtonText}> QR code</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.markButton} onPress={() => setAttendanceMode('manual', item._id)}>
-                  <Text style={styles.markButtonText}> Foto com localização </Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.markedButton} onPress={() => toogleCancelMarkEvent()}>
-                  <Text style={styles.markButtonText}> Cancelar Marcação </Text>
-                </TouchableOpacity>
-              </>
-            )}
-
-          </View>
-        )}
-      />
+      {events.length === 0 ? (
+        <View style={styles.centerContent}>
+          <MaterialIcons name="event-busy" size={64} color="#ccc" />
+          <Text style={styles.emptyText}>
+            {isConnected ? 'Nenhum evento disponível' : 'Nenhum evento salvo offline'}
+          </Text>
+        </View>
+      ) : (
+        <FlatList
+          data={events}
+          keyExtractor={(item) => item._id}
+          renderItem={renderEventCard}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.listContainer}
+        />
+      )}
 
       {(userRole === "professor" || userRole === 'admin') && (
         <View style={styles.btnContainer}>
-          <TouchableOpacity style={styles.btn} onPress={() => router.push('/dashboard')}>
-            <Text style={styles.btn_text}> Voltar para a tela de módulos</Text>
+          <TouchableOpacity 
+            style={styles.btn}
+            onPress={() => router.push('/dashboard')}
+            accessibilityLabel="Voltar para a tela de módulos"
+          >
+            <MaterialIcons name="arrow-back" size={20} color="#fff" />
+            <Text style={styles.btn_text}>Voltar para a tela de módulos</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btn} onPress={() => router.push("/eventsRegistry")}>
+
+          <TouchableOpacity 
+            style={styles.btn}
+            onPress={() => router.push("/eventsRegistry")}
+            accessibilityLabel="Registrar novo evento"
+          >
+            <MaterialIcons name="add-circle" size={20} color="#fff" />
             <Text style={styles.btn_text}>Registrar Evento</Text>
           </TouchableOpacity>
         </View>
       )}
-
     </View>
   );
 };
 
-export default EventsScreen;
-
-// Estilos
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
     backgroundColor: '#f5f5f5',
+  },
+  centerContent: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#666',
+    fontWeight: '500',
+  },
+  emptyText: {
+    marginTop: 16,
+    fontSize: 18,
+    color: '#666',
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+  listContainer: {
+    padding: 16,
   },
   btn_text: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+    marginLeft: 8,
   },
   btnContainer: {
-    display: 'flex',
-    flexDirection: 'column',
+    padding: 16,
+    gap: 12,
   },
   btn: {
     backgroundColor: '#69b932',
     padding: 14,
-    borderRadius: 6,
+    borderRadius: 8,
+    flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 10,
+    justifyContent: 'center',
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
   },
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#333',
-    marginTop: 10,
-    marginBottom: 35,
+    marginVertical: 24,
     textAlign: 'center',
-  },
-  eventDescription: {
-    marginBlock: 12,
-    fontSize: 16
-  },
-  vacancyDescription: {
-    marginBlock: 12,
-    fontSize: 16,
-    textAlign: 'right',
-    paddingRight: 10
-  },
-  titleMarked: {
-    marginTop: 50,
-    textAlign: 'left',
-    fontWeight: 'bold',
   },
   eventContainer: {
     backgroundColor: '#fff',
     padding: 16,
+    marginBottom: 16,
+    borderRadius: 12,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
+  },
+  eventHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginBottom: 12,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
   },
   eventTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
+    marginLeft: 8,
+    color: '#333',
+    flex: 1,
+  },
+  eventDescription: {
+    fontSize: 16,
+    color: '#666',
+    lineHeight: 24,
+    marginBottom: 16,
+  },
+  markingOptions: {
+    marginTop: 16,
+    gap: 12,
+  },
+  titleMarked: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
     marginBottom: 8,
   },
   markButton: {
-    marginTop: 12,
     backgroundColor: '#69b932',
-    paddingVertical: 8,
+    paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 4,
+    borderRadius: 8,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 8,
   },
-  registerEvent: {
-    width: 200,
-    marginTop: 12,
-    backgroundColor: '#69b932',
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 4,
-    textAlign: 'center',
-    justifyContent: 'flex-end',
-    alignItems: 'center'
-  },
-  registerEventText: {
-    textAlign: 'center',
-    color: '#FFF',
-    fontWeight: 'bold'
+  registeredButton: {
+    backgroundColor: '#28a745',
   },
   markedButton: {
-    marginTop: 12,
-    paddingVertical: 8,
+    backgroundColor: '#dc3545',
+    paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 4,
+    borderRadius: 8,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#dc3545',
+    gap: 8,
   },
   markButtonText: {
     color: '#fff',
-    fontWeight: 'bold',
-  },
-  presenceButton: {
-    marginTop: 8,
-    backgroundColor: '#28a745',
-    paddingVertical: 12,
-    borderRadius: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  presenceButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    fontWeight: '600',
     fontSize: 16,
   },
 });
+
+export default EventsScreen;

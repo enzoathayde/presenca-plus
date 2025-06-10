@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, FlatList, TouchableOpacity } from '
 import QRCode from 'react-native-qrcode-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchAllEvents } from '../services/event.service';
-
+import React from 'react';
 
 
 type DashboardStackParamList = {
