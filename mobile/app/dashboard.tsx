@@ -91,6 +91,9 @@ const DashboardScreen: React.FC<any> = () => {
 						</>
 					) : null}
 				</View>
+					<TouchableOpacity style={styles.btn_login} >
+						<Text style={styles.btn_text}>Login</Text>
+					</TouchableOpacity>
 			</View>
 		</ScrollView>
 	);
@@ -100,7 +103,7 @@ const styles = StyleSheet.create({
 	container: {
 		flexGrow: 1,
 		backgroundColor: "#FFFFFF",
-		alignItems: "center",
+		alignItems: "center"
 	},
 	header: {
 		height: 100,
@@ -145,6 +148,19 @@ const styles = StyleSheet.create({
 		marginTop: 10,
 		fontSize: 14,
 	},
+	  btn_login: {
+    width: '95%',
+    padding: 12,
+    marginTop: 15,
+    borderRadius: 6,
+    backgroundColor: '#69b932',
+    alignItems: 'center',
+  },
+	  btn_text: {
+    fontWeight: 'bold',
+    color: '#f4f4f4',
+    fontSize: 16,
+  },
 });
 
 export default DashboardScreen;
