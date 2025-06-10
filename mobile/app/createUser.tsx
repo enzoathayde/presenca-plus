@@ -1,10 +1,3 @@
-<<<<<<< Updated upstream
-// pages/createUser.tsx
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ScrollView } from 'react-native';
-import { router } from 'expo-router';
-import { createUser } from '../services/user.service'; // criaremos essa função no service
-=======
 import React, { useState, useEffect } from 'react';
 import {
   View,
@@ -23,7 +16,6 @@ import {
 import { router } from 'expo-router';
 import { userRegistration } from '../services/auth.service';
 import { User } from '../interfaces/User';
->>>>>>> Stashed changes
 
 const { width, height } = Dimensions.get('window');
 
@@ -33,9 +25,6 @@ const CreateUser: React.FC = () => {
   const [password, setPassword] = useState('');
   const [registration, setRegistration] = useState('');
   const [course, setCourse] = useState('');
-<<<<<<< Updated upstream
-  const [role, setRole] = useState('aluno'); // default
-=======
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   const [messageSuccessfull, setMessageSuccessfull] = useState<string | null>(null);
@@ -48,50 +37,50 @@ const CreateUser: React.FC = () => {
     };
     checkScreenReader();
   }, []);
->>>>>>> Stashed changes
 
   const handleCreate = async () => {
-    if (!name || !email || !password || !registration) {
-      Alert.alert("Erro", "Preencha todos os campos obrigatórios.");
+    setMessage(null);
+    setMessageSuccessfull(null);
+    setLoading(true);
+
+    if (!name || !email || !password || !registration || !course) {
+      setMessage('Todos os campos obrigatórios devem ser preenchidos.');
+      setLoading(false);
+      setTimeout(() => setMessage(null), 2000);
       return;
     }
 
-    try {
-      const newUser = {
-        name,
-        email,
-        password,
-        registration,
-        course,
-        role,
-      };
+    const newUser: User = {
+      name,
+      email,
+      password,
+      registration,
+      course,
+      role: 'aluno',
+    };
 
-      await createUser(newUser);
-      Alert.alert("Sucesso", "Usuário criado com sucesso!");
-      router.push("/listAlunos");
+    try {
+      const response = await userRegistration(newUser);
+
+      if (response?.status === 201) {
+        setMessageSuccessfull('Usuário criado com sucesso!');
+        setTimeout(() => {
+          setMessageSuccessfull(null);
+          setLoading(false);
+          router.push('/listAlunos');
+        }, 2000);
+      } else {
+        throw new Error();
+      }
     } catch (error: any) {
-      console.error(error);
-      Alert.alert("Erro", error.response?.data?.error || "Erro ao criar usuário.");
+      const msg = error?.response?.data?.error || 'Erro ao criar usuário.';
+      setMessage(msg);
+      setTimeout(() => setMessage(null), 2000);
+      setLoading(false);
     }
   };
 
   return (
-<<<<<<< Updated upstream
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Criar Novo Usuário</Text>
-
-      <TextInput style={styles.input} placeholder="Nome" value={name} onChangeText={setName} />
-      <TextInput style={styles.input} placeholder="Email" value={email} onChangeText={setEmail} keyboardType="email-address" />
-      <TextInput style={styles.input} placeholder="Senha" value={password} onChangeText={setPassword} secureTextEntry />
-      <TextInput style={styles.input} placeholder="Matrícula" value={registration} onChangeText={setRegistration} />
-      <TextInput style={styles.input} placeholder="Curso" value={course} onChangeText={setCourse} />
-      <TextInput style={styles.input} placeholder="Cargo (aluno, professor, admin)" value={role} onChangeText={setRole} />
-
-      <TouchableOpacity style={styles.button} onPress={handleCreate}>
-        <Text style={styles.buttonText}>Cadastrar</Text>
-      </TouchableOpacity>
-    </ScrollView>
-=======
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ flex: 1 }}
@@ -205,21 +194,10 @@ const CreateUser: React.FC = () => {
         </ScrollView>
       </ImageBackground>
     </KeyboardAvoidingView>
->>>>>>> Stashed changes
   );
 };
 
 const styles = StyleSheet.create({
-<<<<<<< Updated upstream
-  container: {
-    padding: 20,
-    alignItems: "center",
-    backgroundColor: "#f4f4f4",
-    flexGrow: 1,
-  },
-  title: {
-    fontSize: 22,
-=======
   background: {
     flex: 1,
     resizeMode: 'cover',
@@ -246,27 +224,12 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: Platform.OS === 'ios' ? 24 : 22,
->>>>>>> Stashed changes
     fontWeight: 'bold',
-    marginBottom: 20,
-    alignSelf: "flex-start",
+    color: '#02250c',
+    marginBottom: 30,
+    textAlign: 'center',
   },
   input: {
-<<<<<<< Updated upstream
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 15,
-    width: '100%',
-  },
-  button: {
-    backgroundColor: '#69b932',
-    padding: 12,
-    borderRadius: 6,
-    alignItems: "center",
-    width: '100%',
-=======
     backgroundColor: '#f4f4f4',
     padding: Platform.OS === 'ios' ? 15 : 12,
     marginBottom: 15,
@@ -289,13 +252,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
->>>>>>> Stashed changes
   },
-  buttonText: {
-    color: 'white',
+  btn_text: {
+    fontWeight: 'bold',
     fontSize: 16,
-<<<<<<< Updated upstream
-=======
     color: '#FFFFFF',
   },
   message: {
@@ -326,7 +286,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textDecorationLine: 'underline',
     fontSize: 14,
->>>>>>> Stashed changes
   },
 });
 

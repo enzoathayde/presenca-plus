@@ -94,22 +94,18 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
         setLoading(true);
         const connected = await isOnline();
         setIsConnected(connected);
-        console.log('Status de conexão:', connected);
 
         if (connected) {
           // Online - busca do servidor
           try {
             const response = await fetchAllEvents();
             const eventsData = response.data || response;
-            console.log('Eventos carregados do servidor:', eventsData?.length || 0);
             setEvents(eventsData || []);
             // Salva offline para backup
             await saveEventsOffline(eventsData || []);
           } catch (apiError) {
-            console.error('Erro ao buscar eventos da API:', apiError);
             // Fallback para dados offline se API falhar
             const offlineEvents = await getOfflineEvents();
-            console.log('Carregando eventos offline como fallback:', offlineEvents.length);
             setEvents(offlineEvents);
             if (offlineEvents.length > 0) {
               Alert.alert('Aviso', 'Carregando eventos salvos offline');
@@ -118,7 +114,6 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
         } else {
           // Offline - busca do cache local
           const offlineEvents = await getOfflineEvents();
-          console.log('Carregando eventos offline:', offlineEvents.length);
           setEvents(offlineEvents);
           if (offlineEvents.length === 0) {
             Alert.alert('Offline', 'Nenhum evento salvo offline disponível');

@@ -37,8 +37,8 @@ export const SyncStatus: React.FC = () => {
   const handleManualSync = async () => {
     dispatch(setSyncStatus('syncing'));
     try {
-      const success = await SyncService.getInstance().forceSync();
-      if (success) {
+      const result = await SyncService.getInstance().forceSync();
+      if (result.success) {
         dispatch(setSyncStatus('success'));
         Alert.alert('Sucesso', 'Sincronização concluída com sucesso!');
       } else {
