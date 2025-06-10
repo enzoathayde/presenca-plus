@@ -262,8 +262,17 @@ const ScannerScreen: React.FC<any> = () => {
     } catch (error: any) {
       console.error('❌ Erro ao registrar presença manual:', error);
       
-      if (error.status == 400) {
-        Alert.alert('Erro', 'Você está muito longe do local do evento.');
+      if (error.response?.status === 400) {
+        const errorMessage = error.response?.data?.message || 'Dados inválidos enviados para o servidor.';
+        Alert.alert('Erro de Validação', errorMessage);
+      } else if (error.response?.status === 401) {
+        Alert.alert('Erro de Autenticação', 'Por favor, faça login novamente.');
+      } else if (error.response?.status === 403) {
+        Alert.alert('Erro de Permissão', 'Você não tem permissão para registrar presença neste evento.');
+      } else if (error.response?.status >= 500) {
+        Alert.alert('Erro do Servidor', 'Problema interno do servidor. Tente novamente mais tarde.');
+      } else if (error.message?.includes('Network Error')) {
+        Alert.alert('Erro de Conexão', 'Verifique sua conexão com a internet.');
       } else {
         Alert.alert('Erro', error.message || 'Não foi possível completar a operação.');
       }
