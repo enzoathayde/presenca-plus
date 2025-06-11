@@ -44,35 +44,34 @@ const LoginScreen = () => {
     setLoading(true)
 
     try {
-      const response = await signIn(emailData, password);
+      const firebaseResponse = await signIn(emailData, password);
       
-      if(response) {
-        const response = await findUserByEmail(emailData);
-
-        const { _id ,name, email, role, course} = response.data[0];
-
-
-        AsyncStorage.setItem('id', _id)
-        AsyncStorage.setItem('nome', name)
-        AsyncStorage.setItem('email', email)
-        AsyncStorage.setItem('perfil', role)
-        AsyncStorage.setItem('curso', course)
-
-        console.log(name);
-        console.log(email);
-        console.log(role);
-        console.log(course);
+      if(firebaseResponse) {
+        // Pega o token do Firebase
+        const token = await firebaseResponse.user.getIdToken();
         
-        
+        const userResponse = await findUserByEmail(emailData);
+        const { _id ,name, email, role, course} = userResponse.data[0];
 
+        // Salva todos os dados incluindo o token
+        await AsyncStorage.setItem('id', _id);
+        await AsyncStorage.setItem('nome', name);
+        await AsyncStorage.setItem('email', email);
+        await AsyncStorage.setItem('perfil', role);
+        await AsyncStorage.setItem('curso', course);
+        await AsyncStorage.setItem('@user_token', token); // Salva o token
+
+        console.log('✅ Login realizado com sucesso');
+        console.log('🔑 Token salvo:', token.substring(0, 20) + '...');
+        
         setMessage(null)
         router.push("/dashboard")
       }
 
       setLoading(false)
-      return response
+      return firebaseResponse
     } catch (error: any) {
-      console.log(error);
+      console.log('❌ Erro no login:', error);
 
       setLoading(false);
       setMessage("Usuário/senha incorretos.")

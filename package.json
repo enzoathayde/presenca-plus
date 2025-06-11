@@ -1,6 +1,9 @@
 {
   "dependencies": {
     "@react-native-community/datetimepicker": "^8.3.0",
-    "react-native-modal-datetime-picker": "^18.0.0"
+    "@react-native-community/netinfo": "^11.4.1",
+    "@types/uuid": "^10.0.0",
+    "react-native-modal-datetime-picker": "^18.0.0",
+    "uuid": "^11.1.0"
   }
 }
