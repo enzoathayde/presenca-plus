@@ -75,12 +75,14 @@ export class SyncService {
       let successCount = 0;
       let errorCount = 0;
 
-      for (const attendance of unsyncedAttendances) {
+      for (let i = unsyncedAttendances.length - 1; i >= 0; i--) {
+        const attendance = unsyncedAttendances[i];
         try {
           await this.syncSingleAttendance(attendance);
           await removeOfflineAttendance(attendance.id);
           successCount++;
           console.log(`✅ Presença ${attendance.id} sincronizada`);
+          unsyncedAttendances.splice(i, 1); // Remove pelo índice correto
         } catch (error) {
           errorCount++;
           console.error(`❌ Erro ao sincronizar presença ${attendance.id}:`, error);
