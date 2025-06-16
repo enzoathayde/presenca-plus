@@ -1,5 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 import { UserDTO } from "../dtos/UserDTO";
+import bcrypt from "bcrypt";
 
 const userScehma: Schema = new mongoose.Schema({
     name: {
@@ -46,6 +47,17 @@ const userScehma: Schema = new mongoose.Schema({
       default: Date.now, 
     },
 })
+
+
+userScehma.pre('save', async function (next) {
+  const user = this as any;
+
+  if (!user.isModified('password')) return next();
+
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(user.password, salt);
+  next();
+});
 
 
 export default mongoose.model<UserDTO>('User', userScehma, "users");

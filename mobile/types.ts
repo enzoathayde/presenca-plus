@@ -9,5 +9,9 @@ export interface RootState {
   attendance: {
     typeAttendance: string;
     eventId: string;
+    offlineMode: boolean;
+    syncStatus: 'idle' | 'syncing' | 'success' | 'error';
+    pendingSync: number;
+    isConnected: boolean;
   }
 }

@@ -28,7 +28,8 @@ cron.schedule('0 54 20 * * *', () => {
 const corsOptions = {
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  credentials: true
 };
 app.options('*', cors(corsOptions));
 app.use((req, res, next) => {
