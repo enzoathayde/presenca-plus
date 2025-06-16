@@ -34,6 +34,15 @@ const DashboardScreen: React.FC<any> = () => {
 		router.push("/events");
 	};
 
+	const handleLogout = async () => {
+		try {
+			await AsyncStorage.clear();
+			router.replace("/");
+		} catch (error) {
+			console.error("Erro ao fazer logout:", error);
+		}
+	};
+
 	useEffect(() => {
 		const fetchUserName = async () => {
 			const userName: any = await AsyncStorage.getItem("nome");
@@ -56,7 +65,16 @@ const DashboardScreen: React.FC<any> = () => {
 			contentContainerStyle={styles.container}
 			showsVerticalScrollIndicator={false}
 		>
-			<View style={[styles.header, { height: headerHeight }]} />
+			<View style={[styles.header, { height: headerHeight }]}>
+				<TouchableOpacity 
+					style={styles.logoutButton}
+					onPress={handleLogout}
+					accessibilityLabel="Fazer logout"
+					accessibilityHint="Toque para sair da sua conta"
+				>
+					<FontAwesome5 name="sign-out-alt" size={24} color="white" />
+				</TouchableOpacity>
+			</View>
 			<View style={[styles.content, { minHeight: height * 0.9 }]}>
 				{user && (
 					<Text style={styles.welcomeText} accessibilityRole="header">
@@ -111,9 +129,6 @@ const DashboardScreen: React.FC<any> = () => {
 						</>
 					) : null}
 				</View>
-					<TouchableOpacity style={styles.btn_login} >
-						<Text style={styles.btn_text}>Login</Text>
-					</TouchableOpacity>
 			</View>
 		</ScrollView>
 	);
@@ -128,6 +143,13 @@ const styles = StyleSheet.create({
 	header: {
 		backgroundColor: "#69b932",
 		width: "100%",
+		flexDirection: "row",
+		justifyContent: "flex-end",
+		alignItems: "center",
+		paddingHorizontal: 20,
+	},
+	logoutButton: {
+		padding: 10,
 	},
 	content: {
 		backgroundColor: "#f4f4f4",
@@ -179,19 +201,6 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: "500",
 	},
-	  btn_login: {
-    width: '95%',
-    padding: 12,
-    marginTop: 15,
-    borderRadius: 6,
-    backgroundColor: '#69b932',
-    alignItems: 'center',
-  },
-	  btn_text: {
-    fontWeight: 'bold',
-    color: '#f4f4f4',
-    fontSize: 16,
-  },
 });
 
 export default DashboardScreen;

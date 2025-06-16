@@ -64,6 +64,9 @@ const UserView: React.FC = () => {
       <TouchableOpacity style={styles.button} onPress={handleEdit}>
         <Text style={styles.buttonText}>Editar</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/listAlunos')}>
+        <Text style={styles.buttonText}> Voltar para a tela de alunos</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -81,6 +84,7 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: '#69b932',
     padding: 10,
+    marginTop: 20,
     alignItems: 'center',
     borderRadius: 5,
   },

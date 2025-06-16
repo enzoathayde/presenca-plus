@@ -137,17 +137,29 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
           console.log('Carregando presenças para o usuário:', userId);
           const attendances = await findAttendancesByUserId(userId);
           const attendanceData = attendances.data || attendances || [];
-          console.log('Presenças carregadas:', attendanceData.length);
+          console.log('Presenças carregadas:', attendanceData);
           setAttendancesFromLoggedUser(attendanceData);
         } catch (error) {
           console.error('Erro ao carregar presenças:', error);
-          // Não mostrar erro para o usuário, apenas log
         }
       }
     };
 
     loadAttendances();
   }, [userId]);
+
+  const isUserRegisteredInEvent = (eventId: string) => {
+    const isRegistered = attendancesFromLoggedUser.some((attendance) => {
+      console.log('Comparando:', { 
+        attendanceEventId: attendance.eventId, 
+        currentEventId: eventId,
+        isMatch: attendance.eventId === eventId 
+      });
+      return attendance.eventId === eventId;
+    });
+    console.log('Usuário está registrado no evento?', { eventId, isRegistered });
+    return isRegistered;
+  };
 
   const toggleMarkEvent = (eventId: string) => {
     setMarkedEvent(eventId);
@@ -175,7 +187,7 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
 
       <Text style={styles.eventDescription}>{item.description}</Text>
 
-      {!attendancesFromLoggedUser.some((e) => e.eventId === item._id) ? (
+      {!isUserRegisteredInEvent(item._id) ? (
         <TouchableOpacity 
           style={styles.markButton}
           onPress={() => toggleMarkEvent(item._id)}
