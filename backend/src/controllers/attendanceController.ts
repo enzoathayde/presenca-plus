@@ -40,113 +40,84 @@ const createAttendanceController = async (
 ): Promise<any> => {
   const attendanceData: any = request.body;
 
-  console.log(attendanceData);
-
   try {
-    if (attendanceData.checkInMethod === 'manual') {
-      console.log("fluxo manual");
-      
-      const event: any = await EventModel.findById(attendanceData.eventId);
-      const userExist = await User.findById(attendanceData.userId);
+    // Validação inicial dos dados
+    if (!attendanceData.userId || !attendanceData.eventId) {
+      return response.status(400).json({ 
+        error: "Dados incompletos. userId e eventId são obrigatórios." 
+      });
+    }
 
-      if (!userExist) {
-        return response.status(404).json({ error: "User not found" });
-      }
+    // Verifica se o usuário existe
+    const userExist = await User.findById(attendanceData.userId);
+    if (!userExist) {
+      return response.status(404).json({ error: "Usuário não encontrado" });
+    }
 
+    // Busca o evento
+    let event;
+    if (attendanceData.checkInMethod === 'qr' && attendanceData.qrCode) {
+      event = await EventModel.findOne({ qrCodeData: attendanceData.qrCode });
       if (!event) {
-        return response.status(404).json({ error: "Event not found" });
-      } else {
-        let attendees = event.attendees;
-
-        const alreadyRegistered = attendees.some(
-          (attendee: any) =>
-            attendee.userId.toString() === attendanceData.userId
-        );
-
-        if (alreadyRegistered) {
-          return response
-            .status(400)
-            .json({ error: "User was attended on this event" });
-        }
-
-        event.attendees.push({
-          userId: attendanceData.userId,
-          status: "registered",
-        });
-        console.log(event.attendees);
-        await event.save();
+        return response.status(404).json({ error: "Evento não encontrado para o QR code fornecido" });
       }
+      if (event._id.toString() !== attendanceData.eventId) {
+        return response.status(400).json({ error: "QR code não corresponde ao evento" });
+      }
+    } else {
+      event = await EventModel.findById(attendanceData.eventId);
+      if (!event) {
+        return response.status(404).json({ error: "Evento não encontrado" });
+      }
+    }
 
+    // Verifica se o usuário já está registrado no evento
+    const alreadyRegistered = event.attendees.some(
+      (attendee: any) => attendee.userId.toString() === attendanceData.userId
+    );
+    if (alreadyRegistered) {
+      return response.status(400).json({ error: "Usuário já registrado neste evento" });
+    }
+
+    // Validação de distância para check-in manual
+    if (attendanceData.checkInMethod === 'manual') {
       const eventLat = event.location.coordinates.lat;
       const eventLng = event.location.coordinates.lng;
       const userLat = attendanceData.location.lat;
       const userLng = attendanceData.location.long;
-      const distanceInKm = calculateDistance(
-        eventLat,
-        eventLng,
-        userLat,
-        userLng
-      );
+      
+      const distanceInKm = calculateDistance(eventLat, eventLng, userLat, userLng);
       const distanceInMeters = distanceInKm * 1000;
       const maxAllowedDistance = 50;
 
       if (distanceInMeters > maxAllowedDistance) {
         return response.status(400).json({
-          error: `You are too far from the event location. Distance: ${distanceInMeters.toFixed(
-            2
-          )} meters`,
+          error: `Você está muito longe do local do evento. Distância: ${distanceInMeters.toFixed(2)} metros`
         });
       }
-
-      if (!attendanceData.checkInTime) {
-        attendanceData.checkInTime = new Date();
-      }
-
-      const newAttendance = await AttendanceModel.create(attendanceData);
-      return response.status(201).json(newAttendance);
-    } else {    
-      const event: any = await EventModel.findOne({
-        qrCodeData: attendanceData.qrCode,
-      });
-
-      if (!event) {
-        return response.status(404).json({ error: "Event not found" });
-      } else {
-        let eventId = event._id.toString()
-        let attendees = event.attendees;
- 
-        if(eventId !== attendanceData.eventId) {
-          return response.status(404).json({ error: 'QRcode doesnt match with event'})
-        }
-
-        const alreadyRegistered = attendees.some(
-          (attendee: any) =>
-            attendee.userId.toString() === attendanceData.userId
-        );
-
-        if (alreadyRegistered) {
-          return response
-            .status(400)
-            .json({ error: "User was attended on this event" });
-        }
-        event.attendees.push({
-          userId: attendanceData.userId,
-          status: "registered",
-        });
-
-        await event.save();
-      }
-
-      const newAttendance = await AttendanceModel.create(attendanceData);
-
-      return response.status(201).json(newAttendance);
     }
 
-  
-  } catch (error: any) {
-    console.error("Error creating attendance:", error);
+    // Cria a attendance
+    const newAttendance = await AttendanceModel.create({
+      ...attendanceData,
+      checkInTime: attendanceData.checkInTime || new Date()
+    });
 
-    return response.status(500).json({ error: "Internal Server Error" });
+    // Adiciona o usuário aos participantes do evento
+    event.attendees.push({
+      userId: attendanceData.userId,
+      status: "registered"
+    } as any);
+    await event.save();
+
+    return response.status(201).json(newAttendance);
+
+  } catch (error: any) {
+    console.error("Erro ao criar presença:", error);
+    return response.status(500).json({ 
+      error: "Erro interno do servidor",
+      details: error.message 
+    });
   }
 };
 
@@ -158,10 +129,10 @@ const findAttendancesByUser = async (
 
   try {
     const attendancesResponse: any = await Attendance.find({ userId: user });
-
     return response.status(200).json(attendancesResponse);
   } catch (error) {
-    return response.status(500).json({ error: "Failed to fetch Users" });
+    return response.status(500).json({ error: "Falha ao buscar presenças" });
   }
 };
+
 export { findAttendancesByUser, createAttendanceController };
