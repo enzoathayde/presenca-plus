@@ -19,6 +19,10 @@
 - npx expo start --web --clear (roda para ser exposto na web e limpar o cache do expo)
 - teclar w (inicia a instância web do expo)
 
+### Criar um arquivo .env na raíz da pasta mobile com as seguintes configurações
+
+`API_URL=http://localhost:2047`
+
 
 ## Acesso ao banco de dados
 
