@@ -3,7 +3,7 @@ import { User }  from '../interfaces/User'
 import Constants from 'expo-constants';
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl;
-export const url = axios.create({baseURL: API_URL });
+export const url = axios.create({baseURL: "http://localhost:2047" });
 
 const registerUser = (newUser: User): Promise<any> =>  {
 
