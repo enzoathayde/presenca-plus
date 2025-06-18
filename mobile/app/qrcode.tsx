@@ -90,7 +90,9 @@ const QRCodeScreen: React.FC<any> = ({ navigation }) => {
         </Text>
 
         <FlatList
+        horizontal={true}
           data={events}
+          contentContainerStyle={styles.flatListContent}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <View style={styles.cardEvent}>
@@ -119,6 +121,9 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
+  },
+    flatListContent: {
+    paddingHorizontal: 10,
   },
   header: {
     height: 100,

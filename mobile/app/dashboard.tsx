@@ -94,16 +94,6 @@ const DashboardScreen: React.FC<any> = () => {
 								<FontAwesome5 name="calendar-plus" size={cardSize * 0.3} color="white" />
 								<Text style={styles.cardText}>Eventos</Text>
 							</TouchableOpacity>
-
-							<TouchableOpacity 
-								style={[styles.card, { width: cardSize, height: cardSize }]} 
-								onPress={handleNavigateQR}
-								accessibilityLabel="Acessar código QR"
-								accessibilityHint="Toque para gerar seu código QR"
-							>
-								<FontAwesome5 name="qrcode" size={cardSize * 0.3} color="white" />
-								<Text style={styles.cardText}>Código QR</Text>
-							</TouchableOpacity>
 						</>
 					) : role === "professor" ? (
 						<>
@@ -125,6 +115,15 @@ const DashboardScreen: React.FC<any> = () => {
 							>
 								<FontAwesome5 name="list" size={cardSize * 0.3} color="white" />
 								<Text style={styles.cardText}>Lista de Eventos</Text>
+							</TouchableOpacity>
+									<TouchableOpacity 
+								style={[styles.card, { width: cardSize, height: cardSize }]} 
+								onPress={handleNavigateQR}
+								accessibilityLabel="Acessar código QR"
+								accessibilityHint="Toque para gerar seu código QR"
+							>
+								<FontAwesome5 name="qrcode" size={cardSize * 0.3} color="white" />
+								<Text style={styles.cardText}>Código QR</Text>
 							</TouchableOpacity>
 						</>
 					) : null}
