@@ -44,7 +44,13 @@ const QRCodeScreen: React.FC<any> = ({ navigation }) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [userId, setUserId] = useState<any>(null)
   const [userRole, setuserRole] = useState<any>(null)
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 2; 
 
+  const paginatedEvents = events.slice(
+    currentPage * itemsPerPage,
+    (currentPage + 1) * itemsPerPage
+  );
 
 
   useEffect(() => {
@@ -90,14 +96,13 @@ const QRCodeScreen: React.FC<any> = ({ navigation }) => {
         </Text>
 
         <FlatList
-        horizontal={true}
-          data={events}
+          data={paginatedEvents}
           contentContainerStyle={styles.flatListContent}
+          showsVerticalScrollIndicator={false}
           keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <View style={styles.cardEvent}>
               <Text style={styles.title}>{item.title}</Text>
-              <Text >{item.description}</Text>
               {(userRole === "professor" || userRole === 'admin') && (
                 <QRCode
                   value={item.qrCodeData}
@@ -106,6 +111,34 @@ const QRCodeScreen: React.FC<any> = ({ navigation }) => {
                   backgroundColor="white"
                 />
               )}
+            </View>
+          )}
+          ListFooterComponent={() => (
+            <View style={styles.paginationContainer}>
+              <TouchableOpacity 
+                style={[styles.pageButton, currentPage === 0 && styles.pageButtonDisabled]}
+                onPress={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                disabled={currentPage === 0}
+              >
+                <Text>Anterior</Text>
+              </TouchableOpacity>
+              
+              <Text style={styles.pageText}>
+                Página {currentPage + 1} de {Math.ceil(events.length / itemsPerPage)}
+              </Text>
+              
+              <TouchableOpacity 
+                style={[styles.pageButton, 
+                  currentPage === Math.ceil(events.length / itemsPerPage) - 1 && 
+                  styles.pageButtonDisabled
+                ]}
+                onPress={() => setCurrentPage(prev => 
+                  Math.min(Math.ceil(events.length / itemsPerPage) - 1, prev + 1)
+                )}
+                disabled={currentPage === Math.ceil(events.length / itemsPerPage) - 1}
+              >
+                <Text>Próxima</Text>
+              </TouchableOpacity>
             </View>
           )}
         />
@@ -131,9 +164,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   cardEvent: {
-    backgroundColor: '#EAEAEA',
+    backgroundColor: '#EEE',
     marginBottom: 10,
-    padding: 25,
+    padding: 40,
     display: 'flex',
     gap: 20,
     alignItems: 'center',
@@ -155,8 +188,9 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },  
   title: {
-    fontSize: 16,
-    fontWeight: 'bold'
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 30,
   },
   grid: {
     flexDirection: 'row',
@@ -180,6 +214,25 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
     fontSize: 14,
+  },
+  paginationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    paddingVertical: 10,
+  },
+  pageButton: {
+    backgroundColor: '#69b932',
+    padding: 10,
+    borderRadius: 5,
+  },
+  pageButtonDisabled: {
+    backgroundColor: '#ccc',
+  },
+  pageText: {
+    fontSize: 16,
+    fontWeight: '500',
   },
 });
 export default QRCodeScreen
