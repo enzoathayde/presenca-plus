@@ -28,15 +28,13 @@ const ScannerScreen: React.FC<any> = () => {
     (state: RootState) => state.attendance.eventId
   );
 
-  console.log('🎯 Debug Camera - Tipo de presença:', typeAttendance);
-  console.log('🎯 Debug Camera - ID do evento:', eventId);
-
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraViewType | null>(null);
   const [isCameraActive, setIsCameraActive] = useState(true);
   const [connectionStatus, setConnectionStatus] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false); // NOVO: controla múltiplas leituras
 
   // Verifica conexão periodicamente
   useEffect(() => {
@@ -48,17 +46,13 @@ const ScannerScreen: React.FC<any> = () => {
 
     checkConnection();
     const interval = setInterval(checkConnection, 5000);
-    
     return () => clearInterval(interval);
   }, [dispatch]);
 
   // Verifica se os dados necessários estão disponíveis
   useEffect(() => {
     const checkRequiredData = async () => {
-      console.log('🔍 Verificando dados necessários...');
-      
       if (!typeAttendance || !eventId) {
-        console.log('❌ Dados incompletos:', { typeAttendance, eventId });
         Alert.alert(
           'Erro', 
           'Dados de presença não encontrados. Retornando para eventos.',
@@ -66,15 +60,11 @@ const ScannerScreen: React.FC<any> = () => {
         );
         return;
       }
-
-      console.log('✅ Dados OK, configurando câmera...');
       setIsLoading(false);
     };
-
     checkRequiredData();
   }, [typeAttendance, eventId]);
 
-  // Loading enquanto verifica dados
   if (isLoading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -84,7 +74,6 @@ const ScannerScreen: React.FC<any> = () => {
     );
   }
 
-  // Verifica permissão da câmera
   if (!permission) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -107,7 +96,6 @@ const ScannerScreen: React.FC<any> = () => {
     );
   }
 
-  // Verifica se o tipo de presença é válido
   if (!typeAttendance || (typeAttendance !== 'qr' && typeAttendance !== 'manual')) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -124,7 +112,6 @@ const ScannerScreen: React.FC<any> = () => {
     );
   }
 
-  // Função auxiliar para mostrar feedback de modo offline
   const showOfflineSuccess = () => {
     Alert.alert(
       '📱 Registrado Offline', 
@@ -133,12 +120,14 @@ const ScannerScreen: React.FC<any> = () => {
     );
   };
 
+  // ALTERADO: bloqueia múltiplas leituras e desativa a câmera após leitura
   const handleBarcodeScanned = async ({ data }: { data: string }) => {
-    console.log('📱 QR Code escaneado:', data);
-    
+    if (isProcessing) return;
+    setIsProcessing(true);
+    setIsCameraActive(false);
+
     try {
       const userIdResponse = await AsyncStorage.getItem('id');
-      
       if (!userIdResponse) {
         Alert.alert('Erro', 'Usuário não identificado. Faça login novamente.');
         router.push('/login');
@@ -150,10 +139,7 @@ const ScannerScreen: React.FC<any> = () => {
         userId: userIdResponse,
         checkInMethod: 'qr',
         checkInTime: Date.now(),
-        location: {
-          lat: 0,
-          long: 0,
-        },
+        location: { lat: 0, long: 0 },
         deviceInfo: {
           brand: Device.brand,
           modelName: Device.modelName,
@@ -163,7 +149,6 @@ const ScannerScreen: React.FC<any> = () => {
         qrCode: data
       };
 
-      console.log('📤 Enviando presença QR:', attendanceObject);
       const response = await createNewAttendance(attendanceObject);
 
       if (response.offline) {
@@ -172,7 +157,6 @@ const ScannerScreen: React.FC<any> = () => {
       }
 
       if (response.status !== 200 && response.status !== 201) {
-        console.error('❌ Erro na resposta:', response.error);
         Alert.alert('Erro', response.error);
         router.push('/events');
         return;
@@ -181,9 +165,10 @@ const ScannerScreen: React.FC<any> = () => {
       Alert.alert('Sucesso', 'Presença registrada com sucesso!');
       router.push('/events');
     } catch (error: any) {
-      console.error('❌ Erro ao registrar presença QR:', error);
-      Alert.alert('Erro', 'caiu na vila ');
+      Alert.alert('Erro', 'Não foi possível registrar presença.');
       router.push('/events');
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -194,13 +179,9 @@ const ScannerScreen: React.FC<any> = () => {
     }
 
     try {
-      console.log('📷 Tirando foto...');
       const photo = await cameraRef.current.takePictureAsync();
-      console.log('✅ Foto tirada:', photo.uri);
-
       setIsCameraActive(false);
 
-      // Solicita permissão para acessar a localização
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Permissão negada', 'A localização não pode ser acessada.');
@@ -208,13 +189,9 @@ const ScannerScreen: React.FC<any> = () => {
         return;
       }
 
-      console.log('📍 Obtendo localização...');
-      // Obtém a localização atual
       const location = await Location.getCurrentPositionAsync({});
       const { latitude, longitude } = location.coords;
-      console.log('📍 Localização obtida:', { latitude, longitude });
 
-      // Obtém informações do dispositivo
       const deviceInfo = {
         brand: Device.brand,
         modelName: Device.modelName,
@@ -222,16 +199,13 @@ const ScannerScreen: React.FC<any> = () => {
         osVersion: Device.osVersion || 'Unknown',
       };
 
-      // Obtém o ID do usuário do AsyncStorage
       const userIdResponse = await AsyncStorage.getItem('id');
-
       if (!userIdResponse) {
         Alert.alert('Erro', 'Usuário não identificado. Faça login novamente.');
         router.push('/login');
         return;
       }
 
-      // Cria o objeto de presença
       const attendanceObject = {
         eventId: eventId,
         userId: userIdResponse,
@@ -244,9 +218,6 @@ const ScannerScreen: React.FC<any> = () => {
         deviceInfo: deviceInfo,
       };
 
-      console.log("📤 Enviando presença manual:", attendanceObject);
-
-      // Envia os dados para o backend usando a service
       const response = await createNewAttendance(attendanceObject);
 
       if (response.offline) {
@@ -254,14 +225,9 @@ const ScannerScreen: React.FC<any> = () => {
         return;
       }
 
-      console.log('✅ Resposta do servidor:', response);
-
-      // Feedback de sucesso
       Alert.alert('Sucesso', 'Presença registrada com sucesso!');
       router.push("/events");
     } catch (error: any) {
-      console.error('❌ Erro ao registrar presença manual:', error);
-      
       if (error.response?.status === 400) {
         const errorMessage = error.response?.data?.message || 'Dados inválidos enviados para o servidor.';
         Alert.alert('Erro de Validação', errorMessage);
@@ -276,7 +242,6 @@ const ScannerScreen: React.FC<any> = () => {
       } else {
         Alert.alert('Erro', error.message || 'Não foi possível completar a operação.');
       }
-      
       router.push("/events");
     }
   };
@@ -297,7 +262,7 @@ const ScannerScreen: React.FC<any> = () => {
         </Text>
       </View>
 
-      {typeAttendance === 'qr' && (
+      {typeAttendance === 'qr' && isCameraActive && (
         <CameraView
           style={styles.camera}
           facing={facing}
