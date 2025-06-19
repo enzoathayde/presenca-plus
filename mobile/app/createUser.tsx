@@ -12,6 +12,7 @@ import {
   AccessibilityInfo,
   ScrollView,
   KeyboardAvoidingView,
+  Alert,
 } from 'react-native';
 import { router } from 'expo-router';
 import { userRegistration } from '../services/auth.service';
@@ -29,6 +30,7 @@ const CreateUser: React.FC = () => {
   const [message, setMessage] = useState<string | null>(null);
   const [messageSuccessfull, setMessageSuccessfull] = useState<string | null>(null);
   const [isScreenReaderEnabled, setIsScreenReaderEnabled] = useState(false);
+  const [errors, setErrors] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     const checkScreenReader = async () => {
@@ -38,17 +40,49 @@ const CreateUser: React.FC = () => {
     checkScreenReader();
   }, []);
 
+  const validateFields = () => {
+    const newErrors: {[key: string]: string} = {};
+
+    if (!name.trim()) {
+      newErrors.name = 'Nome é obrigatório';
+    }
+
+    if (!email.trim()) {
+      newErrors.email = 'Email é obrigatório';
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = 'Email deve ter um formato válido';
+    }
+
+    if (!password.trim()) {
+      newErrors.password = 'Senha é obrigatória';
+    } else if (password.length < 6) {
+      newErrors.password = 'Senha deve ter pelo menos 6 caracteres';
+    }
+
+    if (!registration.trim()) {
+      newErrors.registration = 'Matrícula é obrigatória';
+    }
+
+    if (!course.trim()) {
+      newErrors.course = 'Curso é obrigatório';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleCreate = async () => {
     setMessage(null);
     setMessageSuccessfull(null);
-    setLoading(true);
+    setErrors({});
 
-    if (!name || !email || !password || !registration || !course) {
-      setMessage('Todos os campos obrigatórios devem ser preenchidos.');
-      setLoading(false);
-      setTimeout(() => setMessage(null), 2000);
+    // Validar campos
+    if (!validateFields()) {
+      Alert.alert('Erro de Validação', 'Por favor, corrija os campos destacados em vermelho');
       return;
     }
+
+    setLoading(true);
 
     const newUser: User = {
       name,
@@ -73,10 +107,28 @@ const CreateUser: React.FC = () => {
         throw new Error();
       }
     } catch (error: any) {
-      const msg = error?.response?.data?.error || 'Erro ao criar usuário.';
-      setMessage(msg);
-      setTimeout(() => setMessage(null), 2000);
       setLoading(false);
+      
+      // Tratamento de erro mais específico
+      let errorMessage = 'Erro ao criar usuário';
+      
+      if (error.response) {
+        // Erro da API
+        if (error.response.status === 400) {
+          errorMessage = 'Dados inválidos. Verifique as informações inseridas.';
+        } else if (error.response.status === 409) {
+          errorMessage = 'Email ou matrícula já cadastrados.';
+        } else if (error.response.status === 500) {
+          errorMessage = 'Erro interno do servidor. Tente novamente mais tarde.';
+        } else {
+          errorMessage = error.response.data?.error || error.response.data?.message || 'Erro desconhecido';
+        }
+      } else if (error.request) {
+        // Erro de rede
+        errorMessage = 'Erro de conexão. Verifique sua internet e tente novamente.';
+      }
+      
+      Alert.alert('Erro', errorMessage);
     }
   };
 
@@ -107,50 +159,69 @@ const CreateUser: React.FC = () => {
               </Text>
             )}
 
-            <TextInput 
-              style={styles.input} 
-              placeholder="Nome" 
-              value={name} 
-              onChangeText={setName}
-              accessibilityLabel="Campo para inserir o nome do aluno"
-              accessibilityHint="Digite o nome completo do aluno"
-            />
-            <TextInput 
-              style={styles.input} 
-              placeholder="Email" 
-              value={email} 
-              onChangeText={setEmail} 
-              keyboardType="email-address"
-              autoCapitalize="none"
-              accessibilityLabel="Campo para inserir o email do aluno"
-              accessibilityHint="Digite o email do aluno"
-            />
-            <TextInput 
-              style={styles.input} 
-              placeholder="Senha" 
-              value={password} 
-              onChangeText={setPassword} 
-              secureTextEntry
-              accessibilityLabel="Campo para inserir a senha"
-              accessibilityHint="Digite a senha do aluno"
-            />
-            <TextInput 
-              style={styles.input} 
-              placeholder="Matrícula" 
-              value={registration} 
-              onChangeText={setRegistration}
-              keyboardType="numeric"
-              accessibilityLabel="Campo para inserir a matrícula"
-              accessibilityHint="Digite o número da matrícula do aluno"
-            />
-            <TextInput 
-              style={styles.input} 
-              placeholder="Curso" 
-              value={course} 
-              onChangeText={setCourse}
-              accessibilityLabel="Campo para inserir o curso"
-              accessibilityHint="Digite o curso do aluno"
-            />
+            <View style={styles.inputContainer}>
+              <TextInput 
+                style={[styles.input, errors.name && styles.inputError]} 
+                placeholder="Nome" 
+                value={name} 
+                onChangeText={setName}
+                accessibilityLabel="Campo para inserir o nome do aluno"
+                accessibilityHint="Digite o nome completo do aluno"
+              />
+              {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
+            </View>
+
+            <View style={styles.inputContainer}>
+              <TextInput 
+                style={[styles.input, errors.email && styles.inputError]} 
+                placeholder="Email" 
+                value={email} 
+                onChangeText={setEmail} 
+                keyboardType="email-address"
+                autoCapitalize="none"
+                accessibilityLabel="Campo para inserir o email do aluno"
+                accessibilityHint="Digite o email do aluno"
+              />
+              {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+            </View>
+
+            <View style={styles.inputContainer}>
+              <TextInput 
+                style={[styles.input, errors.password && styles.inputError]} 
+                placeholder="Senha" 
+                value={password} 
+                onChangeText={setPassword} 
+                secureTextEntry
+                accessibilityLabel="Campo para inserir a senha"
+                accessibilityHint="Digite a senha do aluno"
+              />
+              {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+            </View>
+
+            <View style={styles.inputContainer}>
+              <TextInput 
+                style={[styles.input, errors.registration && styles.inputError]} 
+                placeholder="Matrícula" 
+                value={registration} 
+                onChangeText={setRegistration}
+                keyboardType="numeric"
+                accessibilityLabel="Campo para inserir a matrícula"
+                accessibilityHint="Digite o número da matrícula do aluno"
+              />
+              {errors.registration && <Text style={styles.errorText}>{errors.registration}</Text>}
+            </View>
+
+            <View style={styles.inputContainer}>
+              <TextInput 
+                style={[styles.input, errors.course && styles.inputError]} 
+                placeholder="Curso" 
+                value={course} 
+                onChangeText={setCourse}
+                accessibilityLabel="Campo para inserir o curso"
+                accessibilityHint="Digite o curso do aluno"
+              />
+              {errors.course && <Text style={styles.errorText}>{errors.course}</Text>}
+            </View>
 
             {message && (
               <Text 
@@ -229,16 +300,29 @@ const styles = StyleSheet.create({
     marginBottom: 30,
     textAlign: 'center',
   },
+  inputContainer: {
+    width: '100%',
+    marginBottom: 15,
+  },
   input: {
     backgroundColor: '#f4f4f4',
     padding: Platform.OS === 'ios' ? 15 : 12,
-    marginBottom: 15,
     borderRadius: 8,
     borderWidth: 1.5,
     borderColor: '#006653',
     width: '100%',
     fontSize: 16,
     color: '#333',
+  },
+  inputError: {
+    borderColor: '#ff0000',
+    borderWidth: 2,
+  },
+  errorText: {
+    color: '#ff0000',
+    fontSize: 12,
+    marginTop: 5,
+    marginLeft: 5,
   },
   btn: {
     width: '100%',
@@ -290,3 +374,4 @@ const styles = StyleSheet.create({
 });
 
 export default CreateUser;
+
