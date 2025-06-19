@@ -62,6 +62,7 @@ const createAttendanceController = async (
         return response.status(404).json({ error: "Evento não encontrado para o QR code fornecido" });
       }
       if (event._id.toString() !== attendanceData.eventId) {
+        console.log('QR code não corresponde ao evento');
         return response.status(400).json({ error: "QR code não corresponde ao evento" });
       }
     } else {

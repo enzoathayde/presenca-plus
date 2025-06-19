@@ -172,8 +172,8 @@ const ScannerScreen: React.FC<any> = () => {
       }
 
       if (response.status !== 200 && response.status !== 201) {
-        console.error('❌ Erro na resposta:', response.data?.error);
-        Alert.alert('Erro', response.data?.error || 'Erro ao registrar presença');
+        console.error('❌ Erro na resposta:', response.error);
+        Alert.alert('Erro', response.error);
         router.push('/events');
         return;
       }
@@ -182,7 +182,7 @@ const ScannerScreen: React.FC<any> = () => {
       router.push('/events');
     } catch (error: any) {
       console.error('❌ Erro ao registrar presença QR:', error);
-      Alert.alert('Erro', error?.message || 'Erro desconhecido. Tente novamente.');
+      Alert.alert('Erro', 'caiu na vila ');
       router.push('/events');
     }
   };

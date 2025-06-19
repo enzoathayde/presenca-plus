@@ -110,7 +110,7 @@ const createNewAttendance = async (attendanceObj: any): Promise<any> => {
         console.error("📝 Dados que causaram erro 400:", attendanceObj);
         console.error("📝 Resposta da API:", error.response.data);
       }
-      throw error; // Erro real da API
+      return  error.response.data; // Erro real da API
     }
     
     // Salva offline como fallback
