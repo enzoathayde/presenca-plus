@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, FlatList, StyleSheet, Alert, Dimensions, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Alert, Dimensions, Platform, Modal } from 'react-native';
 import { fetchAllEvents } from '../services/event.service';
 import { router } from 'expo-router';
 import { useDispatch, useSelector } from 'react-redux';
@@ -68,6 +68,8 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
   const [attendancesFromLoggedUser, setAttendancesFromLoggedUser] = useState<Attendance[]>([]);
   const [isConnected, setIsConnected] = useState<boolean>(true);
   const [loading, setLoading] = useState<boolean>(true);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   
   const dispatch = useDispatch();
   useSelector(selectAttendance);
@@ -161,12 +163,14 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
     return isRegistered;
   };
 
-  const toggleMarkEvent = (eventId: string) => {
-    setMarkedEvent(eventId);
+  const toggleMarkEvent = (event: Event) => {
+    setSelectedEvent(event);
+    setModalVisible(true);
   };
 
-  const toggleCancelMarkEvent = () => {
-    setMarkedEvent(null);
+  const handleCloseModal = () => {
+    setModalVisible(false);
+    setSelectedEvent(null);
   };
 
   const setAttendanceMode = (type: string, eventId: string) => {
@@ -190,7 +194,7 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
       {!isUserRegisteredInEvent(item._id) ? (
         <TouchableOpacity 
           style={styles.markButton}
-          onPress={() => toggleMarkEvent(item._id)}
+          onPress={() => toggleMarkEvent(item)}
           accessibilityLabel="Marcar presença no evento"
           accessibilityHint="Toque para marcar sua presença neste evento"
         >
@@ -228,15 +232,6 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
           >
             <MaterialIcons name="location-on" size={20} color="#fff" />
             <Text style={styles.markButtonText}> Foto com localização</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.markedButton}
-            onPress={toggleCancelMarkEvent}
-            accessibilityLabel="Cancelar marcação de presença"
-          >
-            <MaterialIcons name="cancel" size={20} color="#fff" />
-            <Text style={styles.markButtonText}> Cancelar Marcação</Text>
           </TouchableOpacity>
         </View>
       )}
@@ -297,9 +292,74 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       )}
+
+      <AttendanceModal 
+        visible={modalVisible}
+        event={selectedEvent}
+        onClose={handleCloseModal}
+        onSelectQR={(eventId) => {
+          setAttendanceMode('qr', eventId);
+          handleCloseModal();
+        }}
+        onSelectManual={(eventId) => {
+          setAttendanceMode('manual', eventId);
+          handleCloseModal();
+        }}
+      />
     </View>
   );
 };
+
+const AttendanceModal = ({ 
+  visible, 
+  event, 
+  onClose, 
+  onSelectQR, 
+  onSelectManual 
+}: { 
+  visible: boolean;
+  event: Event | null;
+  onClose: () => void;
+  onSelectQR: (eventId: string) => void;
+  onSelectManual: (eventId: string) => void;
+}) => (
+  <Modal
+    animationType="slide"
+    transparent={true}
+    visible={visible}
+    onRequestClose={onClose}
+  >
+    <TouchableOpacity 
+      style={styles.modalOverlay} 
+      activeOpacity={1} 
+      onPress={onClose}
+    >
+      <View style={styles.modalContent}>
+        <View style={styles.modalHeader}>
+          <Text style={styles.modalTitle}>Como você vai marcar sua presença no evento ? </Text>
+          <TouchableOpacity onPress={onClose}>
+            <MaterialIcons name="close" size={24} color="#333" />
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity 
+          style={styles.modalButton}
+          onPress={() => event && onSelectQR(event._id)}
+        >
+          <MaterialIcons name="qr-code" size={24} color="#fff" />
+          <Text style={styles.modalButtonText}>QR code</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.modalButton}
+          onPress={() => event && onSelectManual(event._id)}
+        >
+          <MaterialIcons name="location-on" size={24} color="#fff" />
+          <Text style={styles.modalButtonText}>Foto com localização</Text>
+        </TouchableOpacity>
+      </View>
+    </TouchableOpacity>
+  </Modal>
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -433,6 +493,64 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   markButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 24,
+    width: '80%',
+    maxWidth: 400,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+      },
+      android: {
+        elevation: 5,
+      },
+    }),
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  eventTitleModal: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  modalButton: {
+    backgroundColor: '#69b932',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  modalButtonText: {
     color: '#fff',
     fontWeight: '600',
     fontSize: 16,
