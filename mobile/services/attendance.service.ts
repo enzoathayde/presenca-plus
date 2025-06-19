@@ -100,15 +100,15 @@ const createNewAttendance = async (attendanceObj: any): Promise<any> => {
     return response;
     
   } catch (error: any) {
-    console.error("❌ Erro na API:", error.response?.data || error.message);
+    // console.error("❌ Erro na API:", error.response?.data || error.message);
     
     // Se falhar online, tenta salvar offline
     const online = await isOnline();
     if (online) {
       // Erro real da API - vamos tentar entender melhor
       if (error.response?.status === 400) {
-        console.error("📝 Dados que causaram erro 400:", attendanceObj);
-        console.error("📝 Resposta da API:", error.response.data);
+        // console.error("📝 Dados que causaram erro 400:", attendanceObj);
+        // console.error("📝 Resposta da API:", error.response.data);
       }
       return  error.response.data; // Erro real da API
     }
