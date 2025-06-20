@@ -1,0 +1,19 @@
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "env": {
+        "API_URL": "http://localhost:2047"
+      }
+    },
+    "production": {
+      "env": {
+        "API_URL": "https://presenca-plus.onrender.com/"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
