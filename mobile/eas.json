@@ -14,7 +14,7 @@
     },
     "preview": {
       "env": {
-        "API_URL": "https://seu-backend-homologacao.com"
+        "API_URL": "https://presenca-plus.onrender.com/"
       }
     }
   },
