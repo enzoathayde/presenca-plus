@@ -11,7 +11,10 @@ export default {
     userInterfaceStyle: "automatic",
     newArchEnabled: true,
     extra: {
-      apiUrl: process.env.API_URL 
+      eas: {
+        projectId: "d5ce6435-e659-41e3-8f1b-11e07e46c926"
+      },
+      apiUrl: process.env.API_URL
     },
     ios: {
       supportsTablet: true

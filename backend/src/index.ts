@@ -16,13 +16,18 @@ dotenv.config();
 const app: Express = express();  
 const port: number = process.env.PORT ? parseInt(process.env.PORT) : 2047;
 
-cron.schedule('0 54 20 * * *', () => {
-  console.log('Iniciando backup diário...');
-  performBackup();
-  console.log('Backup diário concluído.');
-}, {
-  timezone: "America/Sao_Paulo"
-});
+
+if (process.env.NODE_ENV !== "production") {
+  cron.schedule('0 54 20 * * *', () => {
+    console.log('Iniciando backup diário...');
+    performBackup();
+    console.log('Backup diário concluído.');
+  }, {
+    timezone: "America/Sao_Paulo"
+  });
+}
+
+
 
 
 const corsOptions = {
