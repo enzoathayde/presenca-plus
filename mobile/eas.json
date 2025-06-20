@@ -4,7 +4,7 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "API_URL": "http://localhost:2047"
+        "API_URL": "https://presenca-plus.onrender.com/"
       }
     },
     "production": {

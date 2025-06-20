@@ -20,6 +20,7 @@ export default {
       supportsTablet: true
     },
     android: {
+      package: "com.enzo.presencaplus",
       adaptiveIcon: {
         foregroundImage: "./assets/adaptive-icon.png",
         backgroundColor: "#ffffff"
