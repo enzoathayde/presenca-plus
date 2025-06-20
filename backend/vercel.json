@@ -1,5 +1,4 @@
 {
-  "nodeVersion": "20.18",
   "buildCommand": "npm run build",
   "startCommand": "npm run start"
 }
