@@ -293,14 +293,14 @@ const ScannerScreen: React.FC<any> = () => {
                 style={styles.controlButton}
                 onPress={() => setFacing(facing === 'back' ? 'front' : 'back')}
               >
-                <Text style={styles.controlText}>🔄 Inverter</Text>
+                <Text style={styles.controlText}>🔄</Text>
               </TouchableOpacity>
 
               <TouchableOpacity 
                 style={styles.controlButton}
                 onPress={takePicture}
               >
-                <Text style={styles.controlText}>📸 Tirar Foto</Text>
+                <Text style={styles.controlText}>📸</Text>
               </TouchableOpacity>
             </View>
           </View>

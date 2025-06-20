@@ -4,6 +4,8 @@ import QRCode from 'react-native-qrcode-svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchAllEvents } from '../services/event.service';
 import React from 'react';
+import { router } from 'expo-router';
+import { MaterialIcons } from '@expo/vector-icons';
 
 
 type DashboardStackParamList = {
@@ -115,7 +117,18 @@ const QRCodeScreen: React.FC<any> = ({ navigation }) => {
           )}
         />
 
+              <TouchableOpacity 
+              style={styles.btn} 
+              onPress={() => router.push('/dashboard')}
+              accessibilityRole="button"
+              accessibilityLabel="Voltar para a tela de módulos"
+            >
+              <MaterialIcons name="arrow-back" size={20} color="#fff" />
+              <Text style={styles.btn_text}>Voltar para a tela de módulos</Text>
+            </TouchableOpacity>
       </View>
+
+
     </>
 
   );
@@ -126,7 +139,23 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
+  }, 
+  btn: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    backgroundColor: '#69b932',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 20,
+    width: '100%',
   },
+  btn_text: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 10,
+   },
     flatListContent: {
     paddingHorizontal: 10,
   },

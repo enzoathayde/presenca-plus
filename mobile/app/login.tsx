@@ -45,6 +45,8 @@ const LoginScreen = () => {
 
     try {
       const firebaseResponse = await signIn(emailData, password);
+
+      console.log('firebaseResponse :>> ', firebaseResponse);
       
       if(firebaseResponse) {
         // Pega o token do Firebase

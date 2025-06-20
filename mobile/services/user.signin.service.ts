@@ -1,5 +1,5 @@
-import axios from "axios"
-import { url } from "./user.registration.service"
+import { url } from "./axios.service";
+
 
 
 const findUserByEmail = (userEmail: string): Promise<any> =>  {

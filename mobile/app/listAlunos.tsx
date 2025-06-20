@@ -12,7 +12,7 @@ import {
   Platform,
   AccessibilityInfo,
 } from "react-native";
-import { FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5, MaterialIcons } from "@expo/vector-icons";
 import { findUsersByRole, deleteUser } from "../services/user.service";
 import { router } from "expo-router";
 import { useRequireRole } from "../hooks/useRequireRole";
@@ -80,6 +80,7 @@ const AdminAlunosScreen: React.FC = () => {
   };
 
   const renderCard = (aluno: any, index: number) => (
+    <>
     <View 
       key={index} 
       style={styles.card}
@@ -123,6 +124,8 @@ const AdminAlunosScreen: React.FC = () => {
         </TouchableOpacity>
       </View>
     </View>
+    </>
+    
   );
 
   return (
@@ -186,6 +189,7 @@ const AdminAlunosScreen: React.FC = () => {
         accessibilityRole="button"
         accessibilityLabel="Voltar para a tela de módulos"
       >
+        <MaterialIcons name="arrow-back" size={20} color="#fff" />
         <Text style={styles.btn_text}>Voltar para a tela de módulos</Text>
       </TouchableOpacity>
     </ScrollView>
@@ -274,6 +278,8 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   btn: {
+    flexDirection: 'row',
+    justifyContent: 'center',
     backgroundColor: '#69b932',
     padding: 16,
     borderRadius: 8,

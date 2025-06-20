@@ -1,11 +1,11 @@
-import axios from "axios";
 import { User }  from '../interfaces/User'
-import Constants from 'expo-constants';
+import { url } from './axios.service'
 
-const API_URL = Constants.expoConfig?.extra?.apiUrl;
-export const url = axios.create({baseURL: "http://192.168.1.218:2047" });
 
 const registerUser = (newUser: User): Promise<any> =>  {
+
+  console.log(url); // Adicione esta linha
+
 
   try {
     const response = url.post('/api/users/createNew', newUser)

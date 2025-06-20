@@ -17,6 +17,7 @@ import {
 import { router } from 'expo-router';
 import { userRegistration } from '../services/auth.service';
 import { User } from '../interfaces/User';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -257,6 +258,7 @@ const CreateUser: React.FC = () => {
                   accessibilityLabel="Voltar para a lista de alunos"
                   accessibilityHint="Toque duas vezes para voltar à lista de alunos"
                 >
+                  <MaterialIcons name="arrow-back" size={20} color="#fff" />
                   <Text style={styles.link_text}>Voltar para a tela de alunos</Text>
                 </TouchableOpacity>
               </>

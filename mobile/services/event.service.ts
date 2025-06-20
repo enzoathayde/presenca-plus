@@ -1,4 +1,4 @@
-import { url } from "./user.registration.service";
+import { url } from "./axios.service";
 
 const fetchAllEvents = (): Promise<any> =>  {
 

@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import findUserByEmail from '../services/user.signin.service';
 import { editUser } from '../services/user.service';
 import { useRequireRole } from '../hooks/useRequireRole'; // Hook de segurança
+import { MaterialIcons } from '@expo/vector-icons';
 
 const UserView: React.FC = () => {
   useRequireRole("professor");
@@ -172,6 +173,7 @@ const UserView: React.FC = () => {
         <Text style={styles.buttonText}>Editar</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => router.push('/listAlunos')}>
+        <MaterialIcons name="arrow-back" size={20} color="#fff" />
         <Text style={styles.buttonText}>Voltar para a tela de alunos</Text>
       </TouchableOpacity>
     </View>
@@ -201,6 +203,8 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   button: {
+    flexDirection: 'row',
+    justifyContent: 'center',
     backgroundColor: '#69b932',
     padding: 10,
     marginTop: 20,
@@ -210,6 +214,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

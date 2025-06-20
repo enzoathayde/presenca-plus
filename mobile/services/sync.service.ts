@@ -1,10 +1,11 @@
+import { url } from './axios.service';
 import { 
   getOfflineAttendances, 
   removeOfflineAttendance, 
   isOnline,
   OfflineAttendance 
 } from './offline.service';
-import { url } from './user.registration.service';
+
 
 interface AttendanceApiData {
   eventId: string;
