@@ -4,17 +4,20 @@
       "developmentClient": true,
       "distribution": "internal",
       "env": {
-        "API_URL": "https://presenca-plus.onrender.com/"
+        "API_URL": "https://presenca-plus.onrender.com"
       }
     },
     "production": {
       "env": {
-        "API_URL": "https://presenca-plus.onrender.com/"
+        "API_URL": "https://presenca-plus.onrender.com"
       }
     },
     "preview": {
+            "android": {
+        "buildType": "apk"
+      },
       "env": {
-        "API_URL": "https://presenca-plus.onrender.com/"
+        "API_URL": "https://presenca-plus.onrender.com"
       }
     }
   },

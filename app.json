@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "79d94dc8-f349-45c5-bd5d-99cb4e7206b3"
+      }
+    },
+    "android": {
+      "package": "com.enzoathayde.presencaplus"
+    }
+  }
+}
