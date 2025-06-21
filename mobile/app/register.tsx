@@ -41,7 +41,7 @@ const RegisterScreen: React.FC<any> = ({ navigation }) => {
         setTimeout(() => {
           setMessageSuccessfull(null)
           setLoading(false);
-          router.push("/login")
+          router.replace("/login")
         }, 2000);
         
       }
@@ -110,7 +110,7 @@ const RegisterScreen: React.FC<any> = ({ navigation }) => {
               <TouchableOpacity style={styles.btn} onPress={handleSignUp} disabled={loading}>
                 <Text style={styles.btn_text}>Cadastrar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.link} onPress={() => router.push("/login")}>
+              <TouchableOpacity style={styles.link} onPress={() => router.replace("/login")}>
                 <Text style={styles.link_text}>Já tem uma conta? Faça login</Text>
               </TouchableOpacity>
             </>

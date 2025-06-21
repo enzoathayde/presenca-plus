@@ -24,14 +24,14 @@ const DashboardScreen: React.FC<any> = () => {
 	const [role, setRole] = useState<any>("");
 
 	const handleNavigateCamera = () => {
-		router.push("/camera");
+		router.replace("/camera");
 	};
 	const handleNavigateQR = () => {
-		router.push("/qrcode");
+		router.replace("/qrcode");
 	};
 
 	const handleNavigateEvents = () => {
-		router.push("/events");
+		router.replace("/events");
 	};
 
 	const handleLogout = async () => {
@@ -99,7 +99,7 @@ const DashboardScreen: React.FC<any> = () => {
 						<>
 							<TouchableOpacity
 								style={[styles.card, { width: cardSize, height: cardSize }]}
-								onPress={() => router.push("/listAlunos")}
+								onPress={() => router.replace("/listAlunos")}
 								accessibilityLabel="Administrar alunos"
 								accessibilityHint="Toque para gerenciar a lista de alunos"
 							>

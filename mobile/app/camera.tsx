@@ -56,7 +56,7 @@ const ScannerScreen: React.FC<any> = () => {
         Alert.alert(
           'Erro', 
           'Dados de presença não encontrados. Retornando para eventos.',
-          [{ text: 'OK', onPress: () => router.push('/events') }]
+          [{ text: 'OK', onPress: () => router.replace('/events') }]
         );
         return;
       }
@@ -104,7 +104,7 @@ const ScannerScreen: React.FC<any> = () => {
         </Text>
         <TouchableOpacity 
           style={styles.permissionButton}
-          onPress={() => router.push('/events')}
+          onPress={() => router.replace('/events')}
         >
           <Text style={styles.permissionButtonText}>Voltar para Eventos</Text>
         </TouchableOpacity>
@@ -116,7 +116,7 @@ const ScannerScreen: React.FC<any> = () => {
     Alert.alert(
       '📱 Registrado Offline', 
       'Sua presença foi salva localmente e será sincronizada quando houver conexão com a internet.',
-      [{ text: 'OK', onPress: () => router.push('/events') }]
+      [{ text: 'OK', onPress: () => router.replace('/events') }]
     );
   };
 
@@ -130,7 +130,7 @@ const ScannerScreen: React.FC<any> = () => {
       const userIdResponse = await AsyncStorage.getItem('id');
       if (!userIdResponse) {
         Alert.alert('Erro', 'Usuário não identificado. Faça login novamente.');
-        router.push('/login');
+        router.replace('/login');
         return;
       }
 
@@ -158,15 +158,15 @@ const ScannerScreen: React.FC<any> = () => {
 
       if (response.status !== 200 && response.status !== 201) {
         Alert.alert('Erro', response.error);
-        router.push('/events');
+        router.replace('/events');
         return;
       }
 
       Alert.alert('Sucesso', 'Presença registrada com sucesso!');
-      router.push('/events');
+      router.replace('/events');
     } catch (error: any) {
       Alert.alert('Erro', 'Não foi possível registrar presença.');
-      router.push('/events');
+      router.replace('/events');
     } finally {
       setIsProcessing(false);
     }
@@ -185,7 +185,7 @@ const ScannerScreen: React.FC<any> = () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         Alert.alert('Permissão negada', 'A localização não pode ser acessada.');
-        router.push("/events");
+        router.replace("/events");
         return;
       }
 
@@ -202,7 +202,7 @@ const ScannerScreen: React.FC<any> = () => {
       const userIdResponse = await AsyncStorage.getItem('id');
       if (!userIdResponse) {
         Alert.alert('Erro', 'Usuário não identificado. Faça login novamente.');
-        router.push('/login');
+        router.replace('/login');
         return;
       }
 
@@ -226,7 +226,7 @@ const ScannerScreen: React.FC<any> = () => {
       }
 
       Alert.alert('Sucesso', 'Presença registrada com sucesso!');
-      router.push("/events");
+      router.replace("/events");
     } catch (error: any) {
       if (error.response?.status === 400) {
         const errorMessage = error.response?.data?.message || 'Dados inválidos enviados para o servidor.';
@@ -242,7 +242,7 @@ const ScannerScreen: React.FC<any> = () => {
       } else {
         Alert.alert('Erro', error.message || 'Não foi possível completar a operação.');
       }
-      router.push("/events");
+      router.replace("/events");
     }
   };
 

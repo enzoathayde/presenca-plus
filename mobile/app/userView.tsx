@@ -85,7 +85,7 @@ const UserView: React.FC = () => {
       const updatedUser = { name, email, course, role, registration };
       await editUser(user._id, updatedUser);
       Alert.alert('Sucesso', 'Usuário editado com sucesso');
-      router.push('/listAlunos');
+      router.replace('/listAlunos');
     } catch (error: any) {
       console.error('Erro ao editar usuário', error);
       
@@ -172,7 +172,7 @@ const UserView: React.FC = () => {
       <TouchableOpacity style={styles.button} onPress={handleEdit}>
         <Text style={styles.buttonText}>Editar</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/listAlunos')}>
+      <TouchableOpacity style={styles.button} onPress={() => router.replace('/listAlunos')}>
         <MaterialIcons name="arrow-back" size={20} color="#fff" />
         <Text style={styles.buttonText}>Voltar para a tela de alunos</Text>
       </TouchableOpacity>

@@ -11,7 +11,7 @@ export default function AllowLocationScreen() {
       const { status } = await Location.getForegroundPermissionsAsync();
       
       if(status === 'granted') {
-        router.push('/login')
+        router.replace('/login')
       }
       
       setPermissionStatus(status);
@@ -22,7 +22,7 @@ export default function AllowLocationScreen() {
     const { status, canAskAgain } = await Location.requestForegroundPermissionsAsync();
     setPermissionStatus(status);
     if (status === 'granted') {
-      router.push('/login');
+      router.replace('/login');
     } else if (!canAskAgain) {
       // O usuário selecionou "Não perguntar novamente"
       // Oriente-o a conceder a permissão manualmente nas configurações

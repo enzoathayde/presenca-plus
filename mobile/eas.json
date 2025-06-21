@@ -1,21 +1,24 @@
 {
+  "cli": {
+    "version": ">= 16.12.0",
+    "appVersionSource": "remote"
+  },
   "build": {
     "development": {
       "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
       "distribution": "internal",
-      "env": {
-        "API_URL": "https://presenca-plus.onrender.com"
+      "android": {
+        "buildType": "apk"
       }
     },
     "production": {
-      "env": {
-        "API_URL": "https://presenca-plus.onrender.com"
-      }
-    },
-    "preview": {
-            "android": {
-        "buildType": "apk"
-      },
+      "autoIncrement": true,
+        "android": {
+          "buildType": "apk"
+        },
       "env": {
         "API_URL": "https://presenca-plus.onrender.com"
       }

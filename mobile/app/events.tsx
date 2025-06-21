@@ -202,7 +202,7 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
   const setAttendanceMode = (type: string, eventId: string) => {
     dispatch(setAttendanceType(type));
     dispatch(setEventId(eventId));
-    router.push("/camera");
+    router.replace("/camera");
   };
 
   const renderEventCard = ({ item }: { item: Event }) => (
@@ -314,7 +314,7 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
         <View style={styles.btnContainer}>
           <TouchableOpacity
             style={styles.btn}
-            onPress={() => router.push("/eventsRegistry")}
+            onPress={() => router.replace("/eventsRegistry")}
             accessibilityLabel="Registrar novo evento"
           >
             <MaterialIcons name="add-circle" size={20} color="#fff" />
@@ -327,7 +327,7 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
         <View style={styles.btnContainer}>
               <TouchableOpacity 
                 style={styles.btn} 
-                onPress={() => router.push('/dashboard')}
+                onPress={() => router.replace('/dashboard')}
                 accessibilityRole="button"
                 accessibilityLabel="Voltar para a tela de módulos"
               >

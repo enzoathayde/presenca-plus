@@ -1,6 +1,8 @@
 import { url } from "./axios.service";
 
 export const findUsersByRole = (role: string): Promise<any> => {
+
+
   try {
     const params = new URLSearchParams();
     params.append("role", role);

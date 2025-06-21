@@ -68,7 +68,7 @@ const AdminAlunosScreen: React.FC = () => {
   };
 
   const pushUserView = (alunoEmail: string) => {
-    router.push({
+    router.replace({
       pathname: "/userView",
       params: { userEmail: alunoEmail },
     });
@@ -136,7 +136,7 @@ const AdminAlunosScreen: React.FC = () => {
       <Text style={styles.title} accessibilityRole="header">Administrar Alunos</Text>
       <TouchableOpacity 
         style={styles.buttonCriar} 
-        onPress={() => router.push("/createUser")}
+        onPress={() => router.replace("/createUser")}
         accessibilityRole="button"
         accessibilityLabel="Criar novo usuário"
         accessibilityHint="Toque duas vezes para adicionar um novo aluno"
@@ -185,7 +185,7 @@ const AdminAlunosScreen: React.FC = () => {
 
       <TouchableOpacity 
         style={styles.btn} 
-        onPress={() => router.push('/dashboard')}
+        onPress={() => router.replace('/dashboard')}
         accessibilityRole="button"
         accessibilityLabel="Voltar para a tela de módulos"
       >

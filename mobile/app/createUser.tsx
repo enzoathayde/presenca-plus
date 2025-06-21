@@ -102,7 +102,7 @@ const CreateUser: React.FC = () => {
         setTimeout(() => {
           setMessageSuccessfull(null);
           setLoading(false);
-          router.push('/listAlunos');
+          router.replace('/listAlunos');
         }, 2000);
       } else {
         throw new Error();
@@ -253,7 +253,7 @@ const CreateUser: React.FC = () => {
                 </TouchableOpacity>
                 <TouchableOpacity 
                   style={styles.link} 
-                  onPress={() => router.push('/listAlunos')}
+                  onPress={() => router.replace('/listAlunos')}
                   accessibilityRole="button"
                   accessibilityLabel="Voltar para a lista de alunos"
                   accessibilityHint="Toque duas vezes para voltar à lista de alunos"

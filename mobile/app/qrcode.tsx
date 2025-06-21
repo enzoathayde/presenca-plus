@@ -119,7 +119,7 @@ const QRCodeScreen: React.FC<any> = ({ navigation }) => {
 
               <TouchableOpacity 
               style={styles.btn} 
-              onPress={() => router.push('/dashboard')}
+              onPress={() => router.replace('/dashboard')}
               accessibilityRole="button"
               accessibilityLabel="Voltar para a tela de módulos"
             >

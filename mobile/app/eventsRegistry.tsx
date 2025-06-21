@@ -91,7 +91,7 @@ export default function RegisterEventQuickForm() {
       const res = await createNewEvent(eventPayload);
       console.log('Evento criado:', res);
       Alert.alert('Sucesso', 'Evento registrado com sucesso!');
-      router.push('/events');
+      router.replace('/events');
     } catch (err) {
       console.log(err)
       setError('Erro ao registrar evento. Verifique os dados.');
@@ -184,7 +184,7 @@ export default function RegisterEventQuickForm() {
         )}
       </View>
       
-      <TouchableOpacity style={styles.btnBackToEvents} onPress={() => router.push('/events')}>
+      <TouchableOpacity style={styles.btnBackToEvents} onPress={() => router.replace('/events')}>
         <Text style={styles.font_text}>Voltar para Eventos</Text>
       </TouchableOpacity>
     </View>

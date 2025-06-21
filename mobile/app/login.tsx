@@ -5,6 +5,9 @@ import { signIn } from '../services/auth.service'
 import { router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import findUserByEmail from '../services/user.signin.service';
+import { Alert } from "react-native";
+import { API_URL } from '../services/axios.service';
+
 
 
 
@@ -28,7 +31,7 @@ const LoginScreen = () => {
     }
     
     if(response) {
-      router.push('/dashboard')
+      router.replace('/dashboard')
     }
   }
 
@@ -36,7 +39,7 @@ const LoginScreen = () => {
   useEffect(() =>{
     verifiyUserLogged()
     console.log(hasUserLogged);
-    
+    Alert.alert('API_URL em uso', API_URL);
   },[])
   
 
@@ -67,7 +70,7 @@ const LoginScreen = () => {
         console.log('🔑 Token salvo:', token.substring(0, 20) + '...');
         
         setMessage(null)
-        router.push("/dashboard")
+        router.replace("/dashboard")
       }
 
       setLoading(false)
@@ -85,7 +88,7 @@ const LoginScreen = () => {
   };
 
   const handleSignUp = async () => {
-    router.push("/register")
+    router.replace("/register")
   };
 
   if(!hasUserLogged) {
