@@ -6,8 +6,8 @@ import { router } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import findUserByEmail from '../services/user.signin.service';
 import { Alert } from "react-native";
-import { API_URL } from '../services/axios.service';
-
+import Constants from "expo-constants";
+const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
 
 
