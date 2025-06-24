@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ScrollView
+  View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ScrollView, KeyboardAvoidingView, Platform
 } from 'react-native';
 import { createNewEvent } from '../services/event.service';
 import * as Location from 'expo-location';
@@ -109,143 +109,143 @@ export default function RegisterEventQuickForm() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Registrar Evento</Text>
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
+    >
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 20, backgroundColor: '#FFF' }}
+        keyboardShouldPersistTaps="handled"
+      >
+        <Text style={styles.title}>Registrar Evento</Text>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
 
-      <View style={styles.formContainer}>
-        {step === 1 && (
-          <>
-            <TextInput style={styles.input} placeholder="Título" value={title} onChangeText={setTitle} />
-            <TextInput style={styles.input} placeholder="Descrição" value={description} onChangeText={setDescription} multiline />
-            <TextInput style={styles.input} placeholder="Tipo (ex: workshop)" value={type} onChangeText={setType} />
-            <TextInput style={styles.input} placeholder="Categoria (ex: tecnologia)" value={category} onChangeText={setCategory} />
-          </>
-        )}
+        <View style={styles.formContainer}>
+          {step === 1 && (
+            <>
+              <TextInput style={styles.input} placeholder="Título" value={title} onChangeText={setTitle} />
+              <TextInput style={styles.input} placeholder="Descrição" value={description} onChangeText={setDescription} multiline />
+              <TextInput style={styles.input} placeholder="Tipo (ex: workshop)" value={type} onChangeText={setType} />
+              <TextInput style={styles.input} placeholder="Categoria (ex: tecnologia)" value={category} onChangeText={setCategory} />
+            </>
+          )}
 
-        {step === 2 && (
-          <>
-            <MaskInput
-              style={styles.input}
-              placeholder="Data início (DD/MM/YYYY)"
-              value={startDate}
-              onChangeText={setStartDate}
-              mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
-              keyboardType="number-pad"
-            />
-            <MaskInput
-              style={styles.input}
-              placeholder="Hora início (HH:mm)"
-              value={startTime}
-              onChangeText={setStartTime}
-              mask={[/\d/, /\d/, ':', /\d/, /\d/]}
-              keyboardType="number-pad"
-            />
-            <MaskInput
-              style={styles.input}
-              placeholder="Data fim (DD/MM/YYYY)"
-              value={endDate}
-              onChangeText={setEndDate}
-              mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
-              keyboardType="number-pad"
-            />
-            <MaskInput
-              style={styles.input}
-              placeholder="Hora fim (HH:mm)"
-              value={endTime}
-              onChangeText={setEndTime}
-              mask={[/\d/, /\d/, ':', /\d/, /\d/]}
-              keyboardType="number-pad"
-            />
-          </>
-        )}
-
-        {step === 3 && (
-          <>
-            <View style={styles.mapContainer}>
-              <MapView
-                style={styles.map}
-                region={{
-                  latitude: lat,
-                  longitude: lng,
-                  latitudeDelta: 0.002,
-                  longitudeDelta: 0.002,
-                }}
-                mapType="satellite"
-                pointerEvents="none"
-              >
-                <Marker coordinate={{ latitude: lat, longitude: lng }} />
-              </MapView>
-            </View>
-            <View style={{
-              borderWidth: 1.5,
-              borderColor: '#006653',
-              borderRadius: 6,
-              marginBottom: 15,
-              backgroundColor: '#f4f4f4',
-            }}>
-              <Picker
-                selectedValue={selectedPlace}
-                onValueChange={(itemValue) => {
-                  setSelectedPlace(itemValue);
-                  const place = places.find(p => p.value === itemValue);
-                  if (place) {
-                    setLat(place.lat);
-                    setLng(place.lng);
-                    setLocationName(place.label);
-                  }
-                }}
-                style={{ height: 50 }} // altura opcional
-              >
-                {places.map(place => (
-                  <Picker.Item key={place.value} label={place.label} value={place.value} />
-                ))}
-              </Picker>
-            </View>
-            {/* Só mostra o input se locationName estiver vazio */}
-            {!locationName && (
-              <TextInput
+          {step === 2 && (
+            <>
+              <MaskInput
                 style={styles.input}
-                placeholder="Nome do local"
-                value={locationName}
-                onChangeText={setLocationName}
+                placeholder="Data início (DD/MM/YYYY)"
+                value={startDate}
+                onChangeText={setStartDate}
+                mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
+                keyboardType="number-pad"
               />
-            )}
-            <TextInput style={styles.input} placeholder="Máximo de participantes" keyboardType="numeric" value={maxParticipants} onChangeText={setMaxParticipants} />
-          </>
-        )}
-      </View>
+              <MaskInput
+                style={styles.input}
+                placeholder="Hora início (HH:mm)"
+                value={startTime}
+                onChangeText={setStartTime}
+                mask={[/\d/, /\d/, ':', /\d/, /\d/]}
+                keyboardType="number-pad"
+              />
+              <MaskInput
+                style={styles.input}
+                placeholder="Data fim (DD/MM/YYYY)"
+                value={endDate}
+                onChangeText={setEndDate}
+                mask={[/\d/, /\d/, '/', /\d/, /\d/, '/', /\d/, /\d/, /\d/, /\d/]}
+                keyboardType="number-pad"
+              />
+              <MaskInput
+                style={styles.input}
+                placeholder="Hora fim (HH:mm)"
+                value={endTime}
+                onChangeText={setEndTime}
+                mask={[/\d/, /\d/, ':', /\d/, /\d/]}
+                keyboardType="number-pad"
+              />
+            </>
+          )}
 
-      <View style={styles.btnGroup}>
-        {step === 1 && (
-          <TouchableOpacity style={styles.btnSecondaryDisabled} onPress={() => setStep(step - 1)} disabled>
-            <Text style={styles.font_text}>Voltar</Text>
-          </TouchableOpacity>
-        )}
+          {step === 3 && (
+            <>
+              <View style={styles.mapContainer}>
+                <MapView
+                  style={styles.map}
+                  region={{
+                    latitude: lat,
+                    longitude: lng,
+                    latitudeDelta: 0.002,
+                    longitudeDelta: 0.002,
+                  }}
+                  mapType="satellite"
+                  pointerEvents="none"
+                >
+                  <Marker coordinate={{ latitude: lat, longitude: lng }} />
+                </MapView>
+              </View>
+              <View style={{
+                borderWidth: 1.5,
+                borderColor: '#006653',
+                borderRadius: 6,
+                marginBottom: 15,
+                backgroundColor: '#f4f4f4',
+              }}>
+                <Picker
+                  selectedValue={selectedPlace}
+                  onValueChange={(itemValue) => {
+                    setSelectedPlace(itemValue);
+                    const place = places.find(p => p.value === itemValue);
+                    if (place) {
+                      setLat(place.lat);
+                      setLng(place.lng);
+                      setLocationName(place.label);
+                    }
+                  }}
+                  style={{ height: 50 }} // altura opcional
+                >
+                  {places.map(place => (
+                    <Picker.Item key={place.value} label={place.label} value={place.value} />
+                  ))}
+                </Picker>
+              </View>
+              <TextInput style={styles.input} placeholder="Máximo de participantes" keyboardType="numeric" value={maxParticipants} onChangeText={setMaxParticipants} />
+            </>
+          )}
+        </View>
 
-        {step > 1 && (
-          <TouchableOpacity style={styles.btnSecondary} onPress={() => setStep(step - 1)}>
-            <Text style={styles.font_text}>Voltar</Text>
-          </TouchableOpacity>
-        )}
+        <View style={styles.btnGroup}>
+          {step === 1 && (
+            <TouchableOpacity style={styles.btnSecondaryDisabled} onPress={() => setStep(step - 1)} disabled>
+              <Text style={styles.font_text}>Voltar</Text>
+            </TouchableOpacity>
+          )}
 
-        {step < 3 && (
-          <TouchableOpacity style={styles.btn} onPress={() => setStep(step + 1)}>
-            <Text style={styles.font_text}>Próximo</Text>
-          </TouchableOpacity>
-        )}
+          {step > 1 && (
+            <TouchableOpacity style={styles.btnSecondary} onPress={() => setStep(step - 1)}>
+              <Text style={styles.font_text}>Voltar</Text>
+            </TouchableOpacity>
+          )}
 
-        {step === 3 && (
-          <TouchableOpacity style={styles.btn} onPress={handleRegister}>
-            <Text style={styles.font_text}>Registrar Evento</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-      
-      <TouchableOpacity style={styles.btnBackToEvents} onPress={() => router.replace('/events')}>
-        <Text style={styles.font_text}>Voltar para Eventos</Text>
-      </TouchableOpacity>
-    </View>
+          {step < 3 && (
+            <TouchableOpacity style={styles.btn} onPress={() => setStep(step + 1)}>
+              <Text style={styles.font_text}>Próximo</Text>
+            </TouchableOpacity>
+          )}
+
+          {step === 3 && (
+            <TouchableOpacity style={styles.btn} onPress={handleRegister}>
+              <Text style={styles.font_text}>Registrar Evento</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+        
+        <TouchableOpacity style={styles.btnBackToEvents} onPress={() => router.replace('/events')}>
+          <Text style={styles.font_text}>Voltar para Eventos</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -253,8 +253,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFF',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,  
   },
   title: {
     fontSize: 26,
