@@ -8,7 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import MaskInput from 'react-native-mask-input';
 import MapView, { Marker } from 'react-native-maps';
-import { Picker } from '@react-native-picker/picker'; // instale se necessário
+import { Picker } from '@react-native-picker/picker'; 
 
 export default function RegisterEventQuickForm() {
   const [step, setStep] = useState(1); 
@@ -19,7 +19,7 @@ export default function RegisterEventQuickForm() {
   const [startTime, setStartTime] = useState('');
   const [endDate, setEndDate] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [locationName, setLocationName] = useState('Praça'); // já inicia com 'Praça'
+  const [locationName, setLocationName] = useState('Praça'); 
   const [lat, setLat] = useState<number>(-21.241214);
   const [lng, setLng] = useState<number>(-44.9981623);
   const [maxParticipants, setMaxParticipants] = useState('');
