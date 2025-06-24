@@ -7,6 +7,8 @@ import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import MaskInput from 'react-native-mask-input';
+import MapView, { Marker } from 'react-native-maps';
+import { Picker } from '@react-native-picker/picker'; // instale se necessário
 
 export default function RegisterEventQuickForm() {
   const [step, setStep] = useState(1); 
@@ -17,15 +19,23 @@ export default function RegisterEventQuickForm() {
   const [startTime, setStartTime] = useState('');
   const [endDate, setEndDate] = useState('');
   const [endTime, setEndTime] = useState('');
-  const [locationName, setLocationName] = useState('');
-  const [lat, setLat] = useState<number>(0);
-  const [lng, setLng] = useState<number>(0);
+  const [locationName, setLocationName] = useState('Praça'); // já inicia com 'Praça'
+  const [lat, setLat] = useState<number>(-21.241214);
+  const [lng, setLng] = useState<number>(-44.9981623);
   const [maxParticipants, setMaxParticipants] = useState('');
   const [type, setType] = useState('');
   const [category, setCategory] = useState('');
   const [qrCodeData, setQrCodeData] = useState('');
   const [userId, setUserId] = useState<any>(null);
   const [error, setError] = useState('');
+
+  const places = [
+    { label: 'Praça', value: 'praca', lat: -21.241214, lng: -44.9981623 },
+    { label: 'Auditório', value: 'auditorio', lat: -21.242000, lng: -44.997000 },
+    { label: 'Studio X', value: 'studiox', lat: -21.243000, lng: -44.999000 },
+  ];
+
+  const [selectedPlace, setSelectedPlace] = useState('praca');
 
   const parseToISO = (dateStr: string, timeStr: string) => {
     const [day, month, year]: any = dateStr.split('/');
@@ -56,7 +66,7 @@ export default function RegisterEventQuickForm() {
     };
 
     fetchUserId();
-    fetchLocation();
+    // fetchLocation();
   }, []);
 
   const handleRegister = async () => {
@@ -152,7 +162,55 @@ export default function RegisterEventQuickForm() {
 
         {step === 3 && (
           <>
-            <TextInput style={styles.input} placeholder="Nome do local" value={locationName} onChangeText={setLocationName} />
+            <View style={styles.mapContainer}>
+              <MapView
+                style={styles.map}
+                region={{
+                  latitude: lat,
+                  longitude: lng,
+                  latitudeDelta: 0.002,
+                  longitudeDelta: 0.002,
+                }}
+                mapType="satellite"
+                pointerEvents="none"
+              >
+                <Marker coordinate={{ latitude: lat, longitude: lng }} />
+              </MapView>
+            </View>
+            <View style={{
+              borderWidth: 1.5,
+              borderColor: '#006653',
+              borderRadius: 6,
+              marginBottom: 15,
+              backgroundColor: '#f4f4f4',
+            }}>
+              <Picker
+                selectedValue={selectedPlace}
+                onValueChange={(itemValue) => {
+                  setSelectedPlace(itemValue);
+                  const place = places.find(p => p.value === itemValue);
+                  if (place) {
+                    setLat(place.lat);
+                    setLng(place.lng);
+                    setLocationName(place.label);
+                  }
+                }}
+                style={{ height: 50 }} // altura opcional
+              >
+                {places.map(place => (
+                  <Picker.Item key={place.value} label={place.label} value={place.value} />
+                ))}
+              </Picker>
+            </View>
+            {/* Só mostra o input se locationName estiver vazio */}
+            {!locationName && (
+              <TextInput
+                style={styles.input}
+                placeholder="Nome do local"
+                value={locationName}
+                onChangeText={setLocationName}
+              />
+            )}
             <TextInput style={styles.input} placeholder="Máximo de participantes" keyboardType="numeric" value={maxParticipants} onChangeText={setMaxParticipants} />
           </>
         )}
@@ -266,4 +324,15 @@ const styles = StyleSheet.create({
     color: 'red',
     textAlign: 'center',
   },
+  mapContainer: {
+    height: 200,
+    marginBottom: 15,
+    borderRadius: 6,
+    overflow: 'hidden',
+  },
+  map: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 6,
+  }
 });
