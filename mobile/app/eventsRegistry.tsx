@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ScrollView, KeyboardAvoidingView, Platform
+  View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, 
 } from 'react-native';
 import { createNewEvent } from '../services/event.service';
 import * as Location from 'expo-location';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import MaskInput from 'react-native-mask-input';
-import MapView, { Marker } from 'react-native-maps';
 import { Picker } from '@react-native-picker/picker'; 
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 export default function RegisterEventQuickForm() {
   const [step, setStep] = useState(1); 
@@ -125,7 +125,7 @@ export default function RegisterEventQuickForm() {
           {step === 1 && (
             <>
               <TextInput style={styles.input} placeholder="Título" value={title} onChangeText={setTitle} />
-              <TextInput style={styles.input} placeholder="Descrição" value={description} onChangeText={setDescription} multiline />
+              <TextInput style={styles.inputDescription} placeholder="Descrição" value={description} onChangeText={setDescription} multiline />
               <TextInput style={styles.input} placeholder="Tipo (ex: workshop)" value={type} onChangeText={setType} />
               <TextInput style={styles.input} placeholder="Categoria (ex: tecnologia)" value={category} onChangeText={setCategory} />
             </>
@@ -170,21 +170,6 @@ export default function RegisterEventQuickForm() {
 
           {step === 3 && (
             <>
-              <View style={styles.mapContainer}>
-                <MapView
-                  style={styles.map}
-                  region={{
-                    latitude: lat,
-                    longitude: lng,
-                    latitudeDelta: 0.002,
-                    longitudeDelta: 0.002,
-                  }}
-                  mapType="satellite"
-                  pointerEvents="none"
-                >
-                  <Marker coordinate={{ latitude: lat, longitude: lng }} />
-                </MapView>
-              </View>
               <View style={{
                 borderWidth: 1.5,
                 borderColor: '#006653',
@@ -242,6 +227,7 @@ export default function RegisterEventQuickForm() {
         </View>
         
         <TouchableOpacity style={styles.btnBackToEvents} onPress={() => router.replace('/events')}>
+          <MaterialIcons name="arrow-back" size={20} color="#fff" />
           <Text style={styles.font_text}>Voltar para Eventos</Text>
         </TouchableOpacity>
       </ScrollView>
@@ -274,6 +260,18 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#006653',
     width: '100%',
+    fontSize: 16,
+  },
+  inputDescription: {
+    backgroundColor: '#f4f4f4',
+    padding: 10,
+    marginBottom: 15,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    borderColor: '#006653',
+    width: '100%',
+    height: 125,
+    textAlignVertical: 'top',
     fontSize: 16,
   },
   btnGroup: {
@@ -310,6 +308,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   btnBackToEvents: {
+    flexDirection: 'row',
+    justifyContent: 'center',
     backgroundColor: '#69b932',
     padding: 14,
     borderRadius: 6,

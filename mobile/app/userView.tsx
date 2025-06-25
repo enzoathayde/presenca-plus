@@ -170,7 +170,8 @@ const UserView: React.FC = () => {
       </View>
 
       <TouchableOpacity style={styles.button} onPress={handleEdit}>
-        <Text style={styles.buttonText}>Editar</Text>
+        <MaterialIcons name="check" size={20} color="#fff" />
+        <Text style={styles.buttonText}>Confirmar edição e voltar</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => router.replace('/listAlunos')}>
         <MaterialIcons name="arrow-back" size={20} color="#fff" />
@@ -181,7 +182,7 @@ const UserView: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { padding: 20 },
+  container: { padding: 20, flex: 1, backgroundColor: '#FFFFFF', justifyContent: 'center' },
   title: { fontSize: 24, marginBottom: 20, fontWeight: 'bold' },
   inputContainer: {
     marginBottom: 15,
@@ -207,7 +208,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#69b932',
     padding: 10,
-    marginTop: 20,
+    marginTop: 15,
     alignItems: 'center',
     borderRadius: 5,
   },

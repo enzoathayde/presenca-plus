@@ -311,6 +311,7 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
       )}
 
       {(userRole === "professor" || userRole === "admin") && (
+        <>
         <View style={styles.btnContainer}>
           <TouchableOpacity
             style={styles.btn}
@@ -321,6 +322,18 @@ const EventsScreen: React.FC<any> = ({ navigation }) => {
             <Text style={styles.btn_text}>Registrar Evento</Text>
           </TouchableOpacity>
         </View>
+                <View style={styles.btnContainer}>
+              <TouchableOpacity 
+                style={styles.btn} 
+                onPress={() => router.replace('/dashboard')}
+                accessibilityRole="button"
+                accessibilityLabel="Voltar para a tela de módulos"
+              >
+                <MaterialIcons name="arrow-back" size={20} color="#fff" />
+                <Text style={styles.btn_text}>Voltar para a tela de módulos</Text>
+              </TouchableOpacity>
+        </View>
+        </>
       )} 
 
       {(userRole === "aluno") && ( 
@@ -441,7 +454,8 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   btnContainer: {
-    padding: 16,
+    paddingBottom: 10,
+    paddingInline: 12,
     gap: 12,
   },
   btn: {

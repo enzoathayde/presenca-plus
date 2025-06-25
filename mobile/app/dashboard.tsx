@@ -61,21 +61,12 @@ const DashboardScreen: React.FC<any> = () => {
 	const headerHeight = Platform.OS === 'ios' ? 120 : 100;
 
 	return (
+		<>
 		<ScrollView 
 			contentContainerStyle={styles.container}
 			showsVerticalScrollIndicator={false}
 		>
-			<View style={[styles.header, { height: headerHeight }]}>
-				<TouchableOpacity 
-					style={styles.logoutButton}
-					onPress={handleLogout}
-					accessibilityLabel="Fazer logout"
-					accessibilityHint="Toque para sair da sua conta"
-				>
-					<FontAwesome5 name="sign-out-alt" size={24} color="white" />
-				</TouchableOpacity>
-			</View>
-			<View style={[styles.content, { minHeight: height * 0.9 }]}>
+			<View style={styles.content}>
 				{user && (
 					<Text style={styles.welcomeText} accessibilityRole="header">
 						Bem vindo, <Text style={styles.welcomeTextBold}>{user}</Text>
@@ -130,6 +121,17 @@ const DashboardScreen: React.FC<any> = () => {
 				</View>
 			</View>
 		</ScrollView>
+			<View style={[styles.header]}>
+				<TouchableOpacity 
+					style={styles.logoutButton}
+					onPress={handleLogout}
+					accessibilityLabel="Fazer logout"
+					accessibilityHint="Toque para sair da sua conta"
+				>
+					<FontAwesome5 name="sign-out-alt" size={30} color="white" />
+				</TouchableOpacity>
+			</View>
+			</>
 	);
 };
 
@@ -149,18 +151,18 @@ const styles = StyleSheet.create({
 	},
 	logoutButton: {
 		padding: 10,
+		marginBottom: 10,
 	},
 	content: {
-		backgroundColor: "#f4f4f4",
+		backgroundColor: "#fff",
 		width: "100%",
 		borderRadius: 8,
-		marginTop: -20,
 		padding: 20,
 		alignItems: "center",
 	},
 	welcomeText: {
 		fontSize: 18,
-		marginBottom: 40,
+		paddingBlock: 40,
 		alignSelf: "flex-start",
 		color: "#333",
 	},
@@ -171,7 +173,7 @@ const styles = StyleSheet.create({
 		flexDirection: "row",
 		flexWrap: "wrap",
 		justifyContent: "center",
-		backgroundColor: "#f4f4f4",
+		backgroundColor: "#fff",
 		gap: 20,
 		paddingVertical: 10,
 	},
