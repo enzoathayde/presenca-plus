@@ -1,6 +1,7 @@
 import express, { Express, Router } from "express";
 import { createAttendanceController, findAttendancesByUser } from "../controllers/attendanceController";
 
+
 const attendanceRouter = express.Router()
 /**
  * @swagger
@@ -101,7 +102,7 @@ const attendanceRouter = express.Router()
  *                 error:
  *                   type: string
  */
-attendanceRouter.post('/attendance/createNew', createAttendanceController)
+attendanceRouter.post('/attendance/createNew',createAttendanceController)
 
 /**
  * @swagger

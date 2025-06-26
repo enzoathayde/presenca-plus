@@ -1,4 +1,3 @@
-import { url } from "./user.registration.service";
 import AsyncStorage from '@react-native-async-storage/async-storage';  
 import { getToken } from './auth.service';
 import { 
@@ -8,133 +7,145 @@ import {
   generateOfflineId,
   getOfflineAttendances
 } from './offline.service';
+import { url } from './axios.service';
 
-const createNewAttendance = async (attendanceObj: any): Promise<any> => {
-  try {
-    // Verifica se está online
-    const online = await isOnline();
-    
-    if (!online) {
-      // Salva offline
-      const offlineAttendance: OfflineAttendance = {
-        id: generateOfflineId(),
-        eventId: attendanceObj.eventId,
-        userId: attendanceObj.userId,
-        checkInMethod: attendanceObj.checkInMethod,
-        checkInTime: attendanceObj.checkInTime || Date.now(),
-        location: attendanceObj.location,
-        deviceInfo: attendanceObj.deviceInfo,
-        qrCode: attendanceObj.qrCode,
-        synced: false,
-        timestamp: Date.now()
-      };
-      
-      await saveOfflineAttendance(offlineAttendance);
-      
-      return {
-        status: 201,
-        data: offlineAttendance,
-        offline: true
-      };
-    }
+const createNewAttendance = (attendanceObj: any): Promise<any> => {
 
-    // Prepara dados para envio - garante formato correto
-    const dataToSend: any = {
-      eventId: attendanceObj.eventId,
-      userId: attendanceObj.userId,
-      checkInMethod: attendanceObj.checkInMethod,
-      checkInTime: Date.now(), // Timestamp Unix em milissegundos
-      location: {
-        lat: parseFloat(attendanceObj.location.lat),
-        long: parseFloat(attendanceObj.location.long)
-      },
-      deviceInfo: {
-        brand: attendanceObj.deviceInfo.brand || 'Unknown',
-        modelName: attendanceObj.deviceInfo.modelName || 'Unknown',
-        osName: attendanceObj.deviceInfo.osName || 'Unknown',
-        osVersion: attendanceObj.deviceInfo.osVersion || 'Unknown'
-      }
-    };
-
-    // Adiciona QR code se existir
-    if (attendanceObj.qrCode) {
-      dataToSend.qrCode = attendanceObj.qrCode;
-    }
-
-    console.log("📤 Dados preparados para envio:", dataToSend);
-
-    // Pega o token de autenticação (tenta múltiplas fontes)
-    let token = await AsyncStorage.getItem('@user_token');
-    
-    // Se não tem token salvo, tenta pegar do Firebase
-    if (!token) {
-      try {
-        token = await getToken();
-        if (token) {
-          // Salva o token para uso futuro
-          await AsyncStorage.setItem('@user_token', token);
-        }
-      } catch (error) {
-        console.log('⚠️ Não foi possível obter token do Firebase:', error);
-      }
-    }
-    
-    // Configura headers com autenticação
     const headers: any = {
       'Content-Type': 'application/json',
     };
-    
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-      console.log('🔑 Enviando com token:', token.substring(0, 20) + '...');
-    } else {
-      console.log('⚠️ Enviando sem token de autenticação');
-    }
 
-    // Está online - envia normalmente
-    const response = await url.post('/api/attendance/createNew', dataToSend, {
-      headers
-    });
+    const response = url.post('/api/attendance/createNew', attendanceObj, {
+    headers
+  });
+
+  return response;
+
+  // try {
+  //   // Verifica se está online
+  //   const online = await isOnline();
     
-    console.log("✅ Resposta da API:", response.data);
-    return response;
+  //   if (!online) {
+  //     // Salva offline
+  //     const offlineAttendance: OfflineAttendance = {
+  //       id: generateOfflineId(),
+  //       eventId: attendanceObj.eventId,
+  //       userId: attendanceObj.userId,
+  //       checkInMethod: attendanceObj.checkInMethod,
+  //       checkInTime: attendanceObj.checkInTime || Date.now(),
+  //       location: attendanceObj.location,
+  //       deviceInfo: attendanceObj.deviceInfo,
+  //       qrCode: attendanceObj.qrCode,
+  //       synced: false,
+  //       timestamp: Date.now()
+  //     };
+      
+  //     await saveOfflineAttendance(offlineAttendance);
+      
+  //     return {
+  //       status: 201,
+  //       data: offlineAttendance,
+  //       offline: true
+  //     };
+  //   }
+
+  //   // Prepara dados para envio - garante formato correto
+  //   const dataToSend: any = {
+  //     eventId: attendanceObj.eventId,
+  //     userId: attendanceObj.userId,
+  //     imageCheckIn: attendanceObj.imageBase64,
+  //     checkInTime: Date.now(), 
+  //     location: {
+  //       lat: parseFloat(attendanceObj.location.lat),
+  //       long: parseFloat(attendanceObj.location.long)
+  //     },
+  //     deviceInfo: {
+  //       brand: attendanceObj.deviceInfo.brand || 'Unknown',
+  //       modelName: attendanceObj.deviceInfo.modelName || 'Unknown',
+  //       osName: attendanceObj.deviceInfo.osName || 'Unknown',
+  //       osVersion: attendanceObj.deviceInfo.osVersion || 'Unknown'
+  //     }
+  //   };
+
+  //   // Adiciona QR code se existir
+  //   if (attendanceObj.qrCode) {
+  //     dataToSend.qrCode = attendanceObj.qrCode;
+  //   }
+
+  //   console.log("📤 Dados preparados para envio:", dataToSend);
+
+  //   // Pega o token de autenticação (tenta múltiplas fontes)
+  //   let token = await AsyncStorage.getItem('@user_token');
     
-  } catch (error: any) {
-    // console.error("❌ Erro na API:", error.response?.data || error.message);
+  //   // Se não tem token salvo, tenta pegar do Firebase
+  //   if (!token) {
+  //     try {
+  //       token = await getToken();
+  //       if (token) {
+  //         // Salva o token para uso futuro
+  //         await AsyncStorage.setItem('@user_token', token);
+  //       }
+  //     } catch (error) {
+  //       console.log('⚠️ Não foi possível obter token do Firebase:', error);
+  //     }
+  //   }
     
-    // Se falhar online, tenta salvar offline
-    const online = await isOnline();
-    if (online) {
-      // Erro real da API - vamos tentar entender melhor
-      if (error.response?.status === 400) {
-        // console.error("📝 Dados que causaram erro 400:", attendanceObj);
-        // console.error("📝 Resposta da API:", error.response.data);
-      }
-      return  error.response.data; // Erro real da API
-    }
+  //   // Configura headers com autenticação
+  //   const headers: any = {
+  //     'Content-Type': 'application/json',
+  //   };
     
-    // Salva offline como fallback
-    const offlineAttendance: OfflineAttendance = {
-      id: generateOfflineId(),
-      eventId: attendanceObj.eventId,
-      userId: attendanceObj.userId,
-      checkInMethod: attendanceObj.checkInMethod,
-      checkInTime: attendanceObj.checkInTime || Date.now(),
-      location: attendanceObj.location,
-      deviceInfo: attendanceObj.deviceInfo,
-      qrCode: attendanceObj.qrCode,
-      synced: false,
-      timestamp: Date.now()
-    };
+  //   if (token) {
+  //     headers['Authorization'] = `Bearer ${token}`;
+  //     console.log('🔑 Enviando com token:', token.substring(0, 20) + '...');
+  //   } else {
+  //     console.log('⚠️ Enviando sem token de autenticação');
+  //   }
+
+  //   // Está online - envia normalmente
+  //   const response = await url.post('/api/attendance/createNew', dataToSend, {
+  //     headers
+  //   });
     
-    await saveOfflineAttendance(offlineAttendance);
+  //   console.log("✅ Resposta da API:", response.data);
+  //   return response;
     
-    return {
-      status: 201,
-      data: offlineAttendance,
-      offline: true
-    };
-  }
+  // } catch (error: any) {
+  //   // console.error("❌ Erro na API:", error.response?.data || error.message);
+    
+  //   // Se falhar online, tenta salvar offline
+  //   const online = await isOnline();
+  //   if (online) {
+  //     // Erro real da API - vamos tentar entender melhor
+  //     if (error.response?.status === 400) {
+  //       // console.error("📝 Dados que causaram erro 400:", attendanceObj);
+  //       // console.error("📝 Resposta da API:", error.response.data);
+  //     }
+  //     return  error.response.data; // Erro real da API
+  //   }
+    
+  //   // Salva offline como fallback
+  //   const offlineAttendance: OfflineAttendance = {
+  //     id: generateOfflineId(),
+  //     eventId: attendanceObj.eventId,
+  //     userId: attendanceObj.userId,
+  //     checkInMethod: attendanceObj.checkInMethod,
+  //     checkInTime: attendanceObj.checkInTime || Date.now(),
+  //     location: attendanceObj.location,
+  //     deviceInfo: attendanceObj.deviceInfo,
+  //     qrCode: attendanceObj.qrCode,
+  //     synced: false,
+  //     timestamp: Date.now()
+  //   };
+    
+  //   await saveOfflineAttendance(offlineAttendance);
+    
+  //   return {
+  //     status: 201,
+  //     data: offlineAttendance,
+  //     offline: true
+  //   };
+  // }
 };
 
 // Função para buscar presenças (online + offline)

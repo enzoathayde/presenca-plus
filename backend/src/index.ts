@@ -10,6 +10,7 @@ import swaggerUi from "swagger-ui-express";
 import attendanceRouter from "./routes/attendanceRoutes";
 import performBackup from "./cron/backup.cron";
 import cron from "node-cron";
+import imageRouter from "./controllers/imageController";
 
 dotenv.config();
 
@@ -44,8 +45,9 @@ app.use((req, res, next) => {
 app.use(cors(corsOptions));
 
 
-app.use(express.json());
+app.use(express.json({limit: '20mb'}));
 app.use("/api", userRouter)
+app.use("/api", imageRouter)
 app.use("/api", eventRouter)
 app.use("/api", attendanceRouter)
 app.use('/notifications', notificationRouter); 

@@ -13,9 +13,9 @@ const attendanceSchema: Schema = new mongoose.Schema(
       ref: "User", 
       required: [true, "O ID do usuário é obrigatório"],
     },
-    checkInMethod: {
+    imageCheckIn: {
       type: String,
-      required: [true, "O método de check-in é obrigatório"],
+      required: [true, "A imagem de check-in é obrigatório"],
     },
     checkInTime: {
       type: Date,

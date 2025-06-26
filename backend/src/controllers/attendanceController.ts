@@ -38,88 +38,96 @@ const createAttendanceController = async (
   request: Request,
   response: Response
 ): Promise<any> => {
-  const attendanceData: any = request.body;
+  const attendanceData: AttendanceDTO = request.body;
 
-  try {
-    // Validação inicial dos dados
-    if (!attendanceData.userId || !attendanceData.eventId) {
-      return response.status(400).json({ 
-        error: "Dados incompletos. userId e eventId são obrigatórios." 
-      });
-    }
+  console.log("Dados de presença recebidos:", attendanceData);
 
-    // Verifica se o usuário existe
-    const userExist = await User.findById(attendanceData.userId);
-    if (!userExist) {
-      return response.status(404).json({ error: "Usuário não encontrado" });
-    }
-
-    // Busca o evento
-    let event;
-    if (attendanceData.checkInMethod === 'qr' && attendanceData.qrCode) {
-      event = await EventModel.findOne({ qrCodeData: attendanceData.qrCode });
-      if (!event) {
-        return response.status(404).json({ error: "Evento não encontrado para o QR code fornecido" });
-      }
-      if (event._id.toString() !== attendanceData.eventId) {
-        console.log('QR code não corresponde ao evento');
-        return response.status(400).json({ error: "QR code não corresponde ao evento" });
-      }
-    } else {
-      event = await EventModel.findById(attendanceData.eventId);
-      if (!event) {
-        return response.status(404).json({ error: "Evento não encontrado" });
-      }
-    }
-
-    // Verifica se o usuário já está registrado no evento
-    const alreadyRegistered = event.attendees.some(
-      (attendee: any) => attendee.userId.toString() === attendanceData.userId
-    );
-    if (alreadyRegistered) {
-      return response.status(400).json({ error: "Usuário já registrado neste evento" });
-    }
-
-    // Validação de distância para check-in manual
-    if (attendanceData.checkInMethod === 'manual') {
-      const eventLat = event.location.coordinates.lat;
-      const eventLng = event.location.coordinates.lng;
-      const userLat = attendanceData.location.lat;
-      const userLng = attendanceData.location.long;
-      
-      const distanceInKm = calculateDistance(eventLat, eventLng, userLat, userLng);
-      const distanceInMeters = distanceInKm * 1000;
-      const maxAllowedDistance = 50;
-
-      if (distanceInMeters > maxAllowedDistance) {
-        return response.status(400).json({
-          error: `Você está muito longe do local do evento. Distância: ${distanceInMeters.toFixed(2)} metros`
-        });
-      }
-    }
-
-    // Cria a attendance
-    const newAttendance = await AttendanceModel.create({
-      ...attendanceData,
-      checkInTime: attendanceData.checkInTime || new Date()
-    });
-
-    // Adiciona o usuário aos participantes do evento
-    event.attendees.push({
-      userId: attendanceData.userId,
-      status: "registered"
-    } as any);
-    await event.save();
-
-    return response.status(201).json(newAttendance);
-
-  } catch (error: any) {
-    console.error("Erro ao criar presença:", error);
-    return response.status(500).json({ 
-      error: "Erro interno do servidor",
-      details: error.message 
+  if (!attendanceData.userId || !attendanceData.eventId) {
+    return response.status(400).json({
+      error: "Dados incompletos. userId e eventId são obrigatórios.",
     });
   }
+  
+  console.log('1');
+  
+
+  let event;
+
+  event = await EventModel.findOne({ qrCodeData: attendanceData.qrCode });
+  console.log('event :>> ', event);
+  if (!event) {
+    return response
+      .status(404)
+      .json({ error: "Evento não encontrado para o QR code fornecido" });
+  }
+
+    console.log('2');
+
+  if (event._id.toString() !== attendanceData.eventId) {
+    console.log('attendanceData.eventId :>> ', attendanceData.eventId);
+    console.log('event._id.toString() :>> ', event._id.toString());
+    return response
+      .status(400)
+      .json({ error: "QR code não corresponde ao evento" });
+  } else {
+    event = await EventModel.findById(attendanceData.eventId);
+    if (!event) {
+      return response.status(404).json({ error: "Evento não encontrado" });
+    }
+  }
+
+    console.log('3');
+
+  const alreadyRegistered = event.attendees.some(
+    (attendee: any) => attendee.userId.toString() === attendanceData.userId
+  );
+  if (alreadyRegistered) {
+    return response
+      .status(400)
+      .json({ error: "Usuário já registrado neste evento" });
+  }
+
+  console.log('4');
+  
+
+  const eventLat = event.location.coordinates.lat;
+  const eventLng = event.location.coordinates.lng;
+  const userLat = attendanceData.location.lat;
+  const userLng = attendanceData.location.long;
+
+  console.log('lat do evento', eventLat);
+  console.log('lmg do evento', eventLng);
+  console.log('lat do suario', userLat);
+  console.log('lmg do suario', userLng);
+  
+  const distanceInKm = calculateDistance(eventLat, eventLng, userLat, userLng);
+  const distanceInMeters = distanceInKm * 1000;
+  const maxAllowedDistance = 150;
+
+  if (distanceInMeters > maxAllowedDistance) {
+    console.log('fpra de alcance');
+    
+    return response.status(400).json({
+      error: `Você está muito longe do local do evento. Distância: ${distanceInMeters.toFixed(
+        2
+      )} metros.`,
+    });
+  }
+
+    console.log('5');
+
+  const newAttendance = await AttendanceModel.create({
+    ...attendanceData,
+    checkInTime: attendanceData.checkInTime || new Date(),
+  });
+
+  event.attendees.push({
+    userId: attendanceData.userId,
+    status: "registered",
+  } as any);
+  await event.save();
+
+  return response.status(201).json(newAttendance);
 };
 
 const findAttendancesByUser = async (

@@ -1,7 +1,7 @@
 export interface AttendanceDTO {
   eventId: string; 
   userId: string; 
-  checkInMethod: "qr" | "manual"; 
+  imageCheckIn: string; 
   qrCode: null | string;
   checkInTime: Date;
   location: {

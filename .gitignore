@@ -138,3 +138,6 @@ dist
 # environment variables
 .env
 .env.prod
+
+# photos uploaded
+backend/src/uploads/*
