@@ -1,5 +1,5 @@
 import express, { Express, Router } from "express";
-import { getAllUsersController, getUserByEmailController, createNewUserController, editUserController, deleteUserController, getUsersByRoleController} from "../controllers/userController";
+import { getAllUsersController, getUserByEmailController, createNewUserController, editUserController, deleteUserController, getUsersByRoleController, getUserByIdController} from "../controllers/userController";
 
 
 
@@ -22,6 +22,8 @@ userRouter.get("/users/getAll", getAllUsersController)
 userRouter.get("/users/findByRole", getUsersByRoleController);
 
 userRouter.get("/users/findByEmail", getUserByEmailController)
+
+userRouter.get('/users/findById', getUserByIdController)
 
 /**
  * @swagger

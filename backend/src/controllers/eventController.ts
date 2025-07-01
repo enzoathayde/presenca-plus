@@ -1,6 +1,7 @@
 import { EventDTO } from "../dtos/EventDTO";
 import { Request, Response } from "express";
 import { createNewEventService, deleteEventService, editEventService, getAllEventsService } from "../services/eventServices";
+import Event from "../models/Event";
 
 
 const getAllEventsController = async (_: Request, response: Response): Promise<any> => {
@@ -56,6 +57,25 @@ const createNewEventController = async (request: Request, response: Response): P
     return response.status(500).json({error: "Internal Server Error"});
   }
 }
+
+const getEventByIdController = async(request: Request, response: Response): Promise<any> =>  {
+  
+  const eventId: any = request.query.id;
+
+  try {
+
+    console.log(eventId);
+    
+    const foundedEvent = await Event.findById(eventId)
+
+    return response.status(200).json(foundedEvent?.title)
+  } catch (error) {
+    return response.status(500).json({error: "event not found"})
+  }
+}
+
+
+
 
 
 const editEventController = async (request: Request, response: Response): Promise<any> => {
@@ -130,5 +150,5 @@ function isValidDate(date: any): boolean {
 
 
 
-export { getAllEventsController, createNewEventController, editEventController, deleteEventController}
+export { getAllEventsController, createNewEventController, editEventController, deleteEventController, getEventByIdController}
 

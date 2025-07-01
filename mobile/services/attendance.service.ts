@@ -9,6 +9,13 @@ import {
 } from './offline.service';
 import { url } from './axios.service';
 
+const listAllAttendances = (): Promise<any> => {
+  const response = url.get('/api/attendance/getAll')
+
+  return response;
+}
+
+
 const createNewAttendance = (attendanceObj: any): Promise<any> => {
 
     const headers: any = {
@@ -208,4 +215,4 @@ const findAttendancesByUserId = async (userId: any): Promise<any> => {
   }
 };
 
-export { findAttendancesByUserId, createNewAttendance };
+export { findAttendancesByUserId, createNewAttendance, listAllAttendances};

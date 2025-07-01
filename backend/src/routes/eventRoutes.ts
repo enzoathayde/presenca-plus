@@ -1,5 +1,5 @@
 import express, { Express, Router } from "express";
-import { createNewEventController, deleteEventController, editEventController, getAllEventsController } from "../controllers/eventController";
+import { createNewEventController, deleteEventController, editEventController, getAllEventsController, getEventByIdController } from "../controllers/eventController";
 
 const eventRouter = express.Router()
 
@@ -374,6 +374,8 @@ eventRouter.put("/events/:id", editEventController)
  */
 eventRouter.delete("/events/:id", deleteEventController)
 
+
+eventRouter.get('/events/getById', getEventByIdController)
 
 
 export default eventRouter;

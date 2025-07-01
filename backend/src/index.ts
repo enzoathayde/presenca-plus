@@ -44,6 +44,9 @@ app.use((req, res, next) => {
 });
 app.use(cors(corsOptions));
 
+// puxa as imagens
+const path = require("path");
+app.use("/uploads", express.static('uploads'));
 
 app.use(express.json({limit: '20mb'}));
 app.use("/api", userRouter)

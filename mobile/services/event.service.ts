@@ -22,5 +22,17 @@ const createNewEvent = (event: any): Promise<any> => {
   }
 }
 
+const getEventById = (eventId: any): Promise<any> => {
+  try {
+    const response = url.get('api/events/getById',  {
+    params: { id: eventId },
+    })
 
-export { fetchAllEvents, createNewEvent };
+    return response;
+  } catch (error) {
+    throw error;
+  }
+}
+
+
+export { fetchAllEvents, createNewEvent, getEventById };

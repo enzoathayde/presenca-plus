@@ -1,5 +1,5 @@
 import express, { Express, Router } from "express";
-import { createAttendanceController, findAttendancesByUser } from "../controllers/attendanceController";
+import { createAttendanceController, findAttendancesByUser, findAllAttendances } from "../controllers/attendanceController";
 
 
 const attendanceRouter = express.Router()
@@ -157,6 +157,10 @@ attendanceRouter.post('/attendance/createNew',createAttendanceController)
  *                   type: string
  */
 attendanceRouter.get('/attendance/findByUserId', findAttendancesByUser)
+
+
+
+attendanceRouter.get('/attendance/getAll', findAllAttendances);
 
 export default attendanceRouter;
 

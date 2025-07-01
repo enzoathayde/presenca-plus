@@ -4,6 +4,7 @@ import { UserDTO } from "../dtos/UserDTO";
 import { getAllUsersService, createNewUserService, editUserService, deleteUserService, getUserByEmailService, getUsersByRoleService } from "../services/userServices";
 
 import { Request, Response } from "express";
+import User from "../models/User";
 
 const getAllUsersController = async (_: Request, response: Response): Promise<any> => {
 
@@ -29,6 +30,24 @@ const getUserByEmailController = async(request: Request, response: Response): Pr
       
   }
 }
+
+const getUserByIdController = async(request: Request, response: Response): Promise<any> =>  {
+  
+  const userId: any = request.query.id;
+
+  try {
+
+    console.log(userId);
+    
+    const foundedUser = await User.findById(userId)
+
+    return response.status(200).json(foundedUser?.name)
+  } catch (error) {
+      
+  }
+}
+
+
 
 
 const getUsersByRoleController = async (request: Request, response: Response): Promise<any> => {
@@ -111,4 +130,4 @@ const deleteUserController = async (request: Request, response: Response): Promi
 
 
 
-export { getAllUsersController, getUserByEmailController, createNewUserController, editUserController, deleteUserController, getUsersByRoleController };
+export { getAllUsersController, getUserByEmailController, createNewUserController, editUserController, deleteUserController, getUsersByRoleController, getUserByIdController };

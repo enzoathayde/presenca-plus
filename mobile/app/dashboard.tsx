@@ -30,6 +30,11 @@ const DashboardScreen: React.FC<any> = () => {
 		router.replace("/qrcode");
 	};
 
+		const handleNavigateAttendances = () => {
+		router.replace("/listAttendances");
+	};
+
+
 	const handleNavigateEvents = () => {
 		router.replace("/events");
 	};
@@ -115,6 +120,15 @@ const DashboardScreen: React.FC<any> = () => {
 							>
 								<FontAwesome5 name="qrcode" size={cardSize * 0.3} color="white" />
 								<Text style={styles.cardText}>Código QR</Text>
+							</TouchableOpacity>
+							<TouchableOpacity 
+								style={[styles.card, { width: cardSize, height: cardSize }]} 
+								onPress={handleNavigateAttendances}
+								accessibilityLabel="Acessar código QR"
+								accessibilityHint="Toque para gerar seu código QR"
+							>
+								<FontAwesome5 name="list" size={cardSize * 0.3} color="white" />
+								<Text style={styles.cardText}>Lista de Presenças</Text>
 							</TouchableOpacity>
 						</>
 					) : null}

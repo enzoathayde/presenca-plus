@@ -104,15 +104,6 @@ const createAttendanceController = async (
   const distanceInMeters = distanceInKm * 1000;
   const maxAllowedDistance = 150;
 
-  if (distanceInMeters > maxAllowedDistance) {
-    console.log('fpra de alcance');
-    
-    return response.status(400).json({
-      error: `Você está muito longe do local do evento. Distância: ${distanceInMeters.toFixed(
-        2
-      )} metros.`,
-    });
-  }
 
     console.log('5');
 
@@ -144,4 +135,22 @@ const findAttendancesByUser = async (
   }
 };
 
-export { findAttendancesByUser, createAttendanceController };
+
+const findAllAttendances = async (
+  request: Request,
+  response: Response
+): Promise<any> => {
+
+  try {
+    const allAttendances =  await Attendance.find();
+
+    console.log('allAttendances :>> ', allAttendances);
+
+  return response.status(200).json(allAttendances)
+  } catch (error) {
+    response.status(500).json({ error: "Falha ao buscar presenças" });
+  }
+
+}
+
+export { findAttendancesByUser, createAttendanceController, findAllAttendances };
